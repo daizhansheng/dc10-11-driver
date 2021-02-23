@@ -265,6 +265,44 @@ crw-r----- 1 root root 13, 33 Feb 22 09:56 myled
 	蓝灯   GPIOB12   0xc001b000
 					
 	
+【4】source insight软件的使用
+	1.软件下载的地址
+	https://github.com/daizhansheng/source-insight-tools
+	sourceInsight.exe  :安装的软件
+	sn.txt             :激活的秘钥
+	GLOBAL.CF3         :这是一个配色文件
+	2.双击安装即可
 	
-	
+	3.使用source insight对linux内核创建索引
+		3.1在source insight中创建工程
+			project->new project->工程的名字和工程的路径->
+			
+		3.2将系统移植课程中的linux内核在windows中解压一份
+			如果解压的时候遇错误或者警告直接全部选择“是”
+			
+		3.3将刚才解压的内核代码添加到上述的工程中
+			选择解压后的内核源码的路径，然后点击add all
+			大概会想工程中添加2万多个文件，添加完之后点击close
+		3.4为上述的内核源码创建索引
+			project-->同步文件    
+			大概10分钟左右就能够创建成功了
+		3.5如何验证索引是否创建成功了
+			在source insight中新建一个.c文件,然后
+			输入register_chr，如果能够source insight能够
+			将这个函数补全，就说明索引创建成功了。
+			
+	4.如何查找代码
+		查找 :点击R图标->输入要搜索的内核->在所有到内容后
+		      按下空格停止->点击左侧的<>图标->将光标停在
+			  要查找的函数上-->ctrl+鼠标左键就可以查找到
+			  函数的定义的位置了
+		回退：直接点击回退的图标即可
+
+	5.配色修改
+		options->load configuration->load
+		->选择从github下载到的GLOBAL.CF3
+		->打开    配色即可完成
+
+
+
 	
