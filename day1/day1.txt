@@ -1,0 +1,277 @@
+【1】课程大纲
+	1.linux内核模块
+	2.字符设备驱动
+	3.内核中的并发和竞态的解决方法
+	4.IO模型
+	5.linux内核中的中断
+	6.platform总线驱动
+	7.i2c总线驱动/spi总线驱动
+	8.块设备驱动
+	9.网卡设备驱动
+	10.摄像头驱动
+	
+	共9.5天
+【2】ARM裸机驱动和驱动的区别？
+	共同点：都可以操作硬件
+	不同点：
+		ARM裸机驱动：不需要依赖linux内核，直接通过
+		裸机代码操作硬件即可。所有的操作硬件的代码
+		都在一同main函数中完成。
+		
+		驱动：需要依赖linux内核才可以完成的。驱动代码
+		不能够单独执行，也不可以主动执行，必要有应用层
+		调用的使用才可以执行。在内核中多个驱动是并行执
+		行的。
+	
+【3】linux层次
+应用层：
+	    APP   glibc
+--------------------------------------
+内核层：5大功能：
+		1.内存管理
+		2.文件管理
+		3.网络管理
+		4.进程管理
+		5.设备管理：设备驱动管理
+			1.字符设备驱动:按照字节流来访问，只能顺序方法，
+				不能无序访问的设备，都属于字符设备驱动。
+			2.块设备驱动：按照block来访的（512字节），可以
+				顺序访问也可以无序访问的设备。
+			3.网卡设备驱动：对网络的数据进行收发的功能。
+			    （网卡驱动没有设备节点）
+---------------------------------------
+硬件层：LED  LCD（帧缓存）  触摸屏 camera  鼠标 键盘
+		emmc u盘 硬盘  dm9000 cs8900
+
+
+【4】驱动的使用流程
+	假如有可以demo.c的驱动源码，如何把它配置到内核中
+	
+	Kconfig:生成选项菜单的文件
+		config FARSIGHT_DEMO
+		#	bool                          (Y N)
+			tristate  "test test test"    (Y M N)
+			
+			
+		
+		执行make menuconfig在字符设备驱动中找到
+		 <Y> test test test
+		 <M> test test test
+		 
+	.config:保存选配好的信息的文件
+		CONFIG_FARSIGHT_DEMO=y
+		CONFIG_FARSIGHT_DEMO=m
+	
+	
+	Makefile 
+		obj-$(CONFIG_FARSIGHT_DEMO) += demo.o
+
+		obj-y ->表示驱动要编译到内核中
+		obj-m ->编译成一个内核模块
+		
+	
+
+	编译：
+		make uImage  将驱动编译到内核中，在内核启动的时候
+		             驱动将自动被安装上去
+		make modules 编译完成之后将生成一个demo.ko的文件
+	
+	模块安装：
+		sudo insmod demo.ko   安装
+		sudo rmmod demo       卸载
+			 lsmod            查看
+		
+【5】linux内核模块
+	linux内核模块的三要素：
+		入口：资源的申请
+		出口：资源的释放
+		许可证：遵从开源的协议GPL
+		
+		#include <linux/init.h>
+		#include <linux/module.h>
+
+		//入口
+		static int __init demo_init(void)
+		{
+			//在编译的时候，编译遇到这个__init就会把
+			这个函数放入到.init.text这个段中。
+			return 0;
+		}
+		//告诉内核入口的地址
+		module_init(demo_init);
+		//出口
+		static void __exit demo_exit(void)
+		{
+			//在编译的时候，编译遇到这个__exit就会把
+			这个函数放入到.exit.text这个段中。
+		}
+		//告诉内核出口的地址
+		module_exit(demo_exit);
+		//许可证,注意GPL是大写的
+		MODULE_LICENSE("GPL");
+
+				
+【6】驱动模块的外部编译的方法
+	在内核源码树外进行编译，就是外部编译
+	KERNELDIR:= /home/linux/kernel/kernel-3.4.39/
+	#内核的路径
+	PWD:= $(shell pwd)
+	#当前路径
+	
+	all:                                                                            
+		make -C $(KERNELDIR) M=$(PWD) modules
+		@#进入内核的顶层目录执行make modules,
+		@#并通过M指定要编译的模块的路径在当前的
+		@#路径下。
+	clean:
+		make -C $(KERNELDIR) M=$(PWD) clean
+
+	obj-m:=demo.o
+	#指定的模块的名字
+
+
+【7】linux内核中打印函数的使用
+	printk(打印级别 "控制格式");
+	printk("控制格式"); --->在使用printk的时候不写打印级别就
+	                    --->就使用默认的消息的级别
+	printk("%s:%s:%d\n",__FILE__,__func__,__LINE__);    
+	#define KERN_EMERG  "<0>"   /* system is unusable           */
+	#define KERN_ALERT  "<1>"   /* action must be taken immediately */
+	#define KERN_CRIT   "<2>"   /* critical conditions          */
+	#define KERN_ERR    "<3>"   /* error conditions         */
+	#define KERN_WARNING    "<4>"   /* warning conditions           */
+	#define KERN_NOTICE "<5>"   /* normal but significant condition */
+	#define KERN_INFO   "<6>"   /* informational            */                            
+	#define KERN_DEBUG  "<7>"   /* debug-level messages         */
+	
+	在内核的打印级别中数值越小级别越高，这个打印级别
+	就是用来过滤打印信息。上述的打印级别和消息级别的关系如下：
+	只有当消息的级别大于终端的级别的时候消息才会在终端
+	上显示。
+
+
+	 cat /proc/sys/kernel/printk
+	 4	             4	                 1	                7
+	终端的级别       默认的消息的级别    最大的终端的级别  最小的终端的级别
+
+
+	修改默认的消息的级别（Ubuntu）
+		su root
+		echo 4 3 1 7 > /proc/sys/kernel/printk
+	修改默认的消息的级别（开发板）
+		在rootfs/etc/init.d/rcS文件中添加
+		echo 4 3 1 7 > /proc/sys/kernel/printk
+	
+	进入虚拟终端的方法：
+		ctrl+alt+[F1~F6]
+	退出虚拟终端的方法
+		ctrl+alt+F7
+
+	如果在Ubuntu上想主动查看打印信息，就是不关心打印级别。
+	就可以使用dmesg
+	dmesg 查看所有级别的打印信息
+	sudo dmesg -C 清除所有的打印信息（直接清除）
+	sudo dmesg -c 清除打印信息（先回显后清除）
+
+
+【8】内核模块的传参
+	应用程序可以通过argc和argv进行命令行传参，
+	内核模块是否可以传参？通过如下的宏进行传参。
+	
+	module_param(name, type, perm) 
+	功能：在内核模块接收命令行传递的参数
+	参数：
+		@name :变量名
+		@type :变量的类型
+		 * Standard types are:
+		 *  byte, short, ushort, int, uint, long, ulong
+		 *  charp: a character pointer
+		 *  bool: a bool, values 0/1, y/n, Y/N.
+		 *  invbool: the above, only sense-reversed (N = true).
+		@perm:权限，以变量命名的文件的权限,其他人的权限不能有写
+			/sys/module/demo/parameters/
+			a
+	 MODULE_PARM_DESC(_parm, desc) 
+	 功能：对传参的变量进行描述
+	 参数：
+		@_parm：被描述的变量
+		@desc:描述的字符串
+		
+	如何传参数？
+		1.在安装驱动的时候传参
+			sudo insmod demo.ko a=500
+
+		2.使用上述变量命名的文件进行传参
+			cat a
+			echo 300 > a
+
+	如何查看一个模块中有哪些可传递的变量？
+		modinfo  demo.ko
+		
+	练习：
+		1.内核模块传参（byte,charp）
+		char -> byte  不能够传递字符
+		charp -> 在传递字符串的时候不能够有空格
+		
+
+	通过模块传参传递数组：
+		module_param_array(name, type, nump, perm)
+		功能：接收一个数组
+		参数：
+			@name:数组名
+			@type:数组成员的类型
+			@nump:传递一个变量的地址，
+				  这个变量代表的是传递的数组的成员的个数
+			@perm:权限
+			
+			
+	linux@ubuntu:~/dc10-11/day1/module1$ sudo insmod demo.ko 
+					backlight=10 tt=5 p=hel ww=11,22,33,44,55,66
+	linux@ubuntu:~/dc10-11/day1/module1$ dmesg
+		[16977.159899] backlight = 10
+		[16977.159902] tt = 5
+		[16977.159903] p = hel
+		[16977.159904] ww[0] = 11
+		[16977.159905] ww[1] = 22
+		[16977.159906] ww[2] = 33
+		[16977.159906] ww[3] = 44
+		[16977.159907] ww[4] = 55
+		[16977.159907] ww[5] = 66
+			
+			
+【9】模块导出符号表		
+	在一个内核模块中调用另外一个内核模块中的函数
+	的时候，需要将这个函数的符号表导出，让调用者
+	通过这个符号表能过找到并调用这个函数的过程。
+	
+	好处如下：
+		1.可以解决代码冗余的问题
+		2.可以让驱动开发者的工作更为简单
+		等等
+				
+	EXPORT_SYMBOL_GPL(sym) 
+	功能：导出符号表
+	参数：sym:函数的名字
+
+
+	编译：先编译提供者，将提供者编译好之后
+		就会生成一个Module.symvers,这个文件中就是
+		函数的符号表
+		0x72f367e8  add /home/linux/dc10-11/day1/export/A/demoA EXPORT_SYMBOL_GPL  
+		在编译调用者模块前需要将这个文件拷贝到调用者
+		的目录下然后在执行编译，否者会提示undefined
+		
+		注：如果提供者模块被编译到内核中了，此时在编译调用者模块
+		的时候就不需要拷贝Module.symvers文件了。
+		
+	安装：先安装提供者，在安装调用者
+	
+	卸载：先卸载调用者，在卸载提供者
+
+
+作业：
+	1.完成课上的代码
+	2.对比应用程序和内核模块的使用的区别？
+	
+
+	

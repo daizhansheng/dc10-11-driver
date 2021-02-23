@@ -1,0 +1,227 @@
+【1】复习
+	内核模块：三要素
+	入口
+		static int __init demo_init(void)
+		{
+			
+			return 0;
+		}
+		module_init(demo_init);
+	出口
+		static void __exit demo_exit(void)
+		{
+			
+		}
+		module_exit(demo_exit);
+	许可证
+		MODULE_LICENSE("GPL");
+		
+	外部编译的Makefile
+		KERNELDIR:=/lib/modules/$(shell uname -r)/build/
+		PWD:=$(shell pwd)
+		all:
+			make -C $(KERNELDIR) M=$(PWD) modules
+		clean:
+			make -C $(KERNELDIR) M=$(PWD) clean
+		obj-m:=demo.o
+		
+	模块传参
+		module_param(变量名,类型,权限);
+		module_param_array(数组名,成员的类型,大小,权限);
+		MODULE_PARM_DESC(变量名,"描述字段");
+		
+		sudo insmod demo.ko  变量名=值
+		
+		/sys/module/demo/parameters/
+		变量命名的文件，可以通过cat或者echo来操作这个文件。
+		
+	导出符号表
+		EXPORT_SYMBOL_GPL(函数名);
+		
+		*/linux-5.8内核暂时有点问题/*
+		
+--------------------------------------------------------
+功能	  |      应用程序           | 内核模块
+----------|-------------------------|-------------------
+运行的地址|       0-3G (多)         | 3-4G （一）
+----------|-------------------------|-------------------
+执行	  |     ./a.out             |sudo insmod demo.ko
+停止	  |    ctrl+c               |sudo rmmod demo
+----------|-------------------------|-------------------
+入口	  |     main                |static int __init demo_init
+出口	  |  return exit _exit      |static void __exit demo_exit
+----------|-------------------------|-------------------
+许可证    |  不需要遵从GPL协议      | 遵从GPL MODULE_LICENSE("GPL")
+----------|-------------------------|-------------------
+传参      | argc                    |module_param()
+          | argv                    |module_param_array()
+----------|-------------------------|-------------------
+导出符号表| 不可以导出符号表		|可以 EXPORT_SYMBOL_GPL
+----------|-------------------------|-------------------		
+打印	  |printf/perror/strerror/  |printk (8个级别)
+          |fprintf                  |
+----------|-------------------------|-------------------		
+头文件查找| man手册		            | 通过内核源码查找
+--------------------------------------------------------			
+	
+【2】字符设备驱动
+用户空间：
+	open("/dev/myled",O_RDWR)   read   write  close
+*******************************************
+/dev/字符设备驱动的设备文件
+
+/dev/myled
+	
+crw-r----- 1 root root 13, 33 Feb 22 09:56 myled
+	                   13主设备号 33次设备号
+设备号（32位）=主设备号（高12位）+次设备号（低20位）
+主设备号：标识它是哪一类设备
+次设备号: 同类中的哪一个设备
+			 |
+			 |
+-------------|------------------------------
+内核：       |
+		LED的驱动
+		(字符设备驱动)
+		(每一个驱动都有一个设备号)
+		#############################################
+		#struct file_operations  <===操作方法结构体 #
+		#{                                          #
+		#	函数指针open                            #
+		#	函数指针read                            #
+		#	函数指针write                           #
+		#	函数指针release                         #
+		#}                                          #
+		# 函数指针open-->myled_open ：打开灯        #
+		# 函数指针read-->myled_read ：读灯          #
+		# 函数指针write-->myled_write ：写灯        #
+		# 函数指针release-->myled_close ：关灯      #
+		#                                           #
+		#############################################
+-------------------------------------------
+硬件 ：   LED
+
+
+
+【3】字符设备驱动的API
+	int register_chrdev(unsigned int major, const char *name,
+                  const struct file_operations *fops)
+	功能：注册字符设备驱动
+	参数：
+		@major:主设备号
+				major > 0 用户指定主设备号
+				major = 0 系统自动分配主设备号，
+				并通过返回值将分配到的主设备号返回给你
+		@name:字符设备驱动的名字
+			 cat /proc/devices 
+	
+		@fops:操作方法结构体的指针
+			int (*open) (struct inode *, struct file *);
+			ssize_t (*read) (struct file *, char __user *, size_t, loff_t *);
+            ssize_t (*write) (struct file *, const char __user *, size_t, loff_t *); 
+			int (*release) (struct inode *, struct file *);   
+	
+	返回值：
+		major > 0 ：成功返回0，失败返回错误码
+		major = 0 ：成功返回主设备号，失败返回错误码 
+	
+	
+	void unregister_chrdev(unsigned int major, const char *name)    
+	功能：注销字符设备驱动
+	参数：
+		@major:主设备号
+		@name:名字
+	返回值：无
+	
+	
+	练习：
+		1.字符设备驱动的实例
+	
+【4】驱动的测试流程
+	1.编译驱动
+		make
+	2.安装驱动
+		sudo insmod myled.ko
+	
+	3.查看驱动是否安装成功了
+		lsmod  ===>查看模块是否安装了
+		
+		cat /proc/devices ======>字符设备驱动已经创建成功了
+		 250                    myled
+          |                      |
+		 自动分配的主设备号     字符设备驱动的名字
+	
+	4.查看/dev/是否有设备节点
+		上述编写的字符设备驱动不会自动创建设备节点
+		
+		mknod pathname  b/c major minor
+		
+		mknod:创建设备节点的命令
+		pathname:设备节点的路径+节点名
+	                    |           |
+	                路径是任意的  不一定和设备驱动的名字相同
+		b/c:  b:块设备驱动
+              c:字符设备驱动
+			  网卡没有设备节点
+		major:主设备号
+		minor:次设备号
+		
+		创建设备文件
+		sudo mknod /dev/hello c 250  3
+		查看设备文件
+		crw-r--r-- 1 root root 250, 3 Feb 23 11:25 hello
+	5.看应用程序是否能访问到字符设备驱动
+		编写应用程序让它调用驱动
+		#include <stdio.h>
+
+		char buf[128] = {0};
+
+		int main(int argc, const char *argv[])
+		{
+			int fd; 
+			if((fd = open("./hello",O_RDWR))<0){
+				perro("open error");
+				return -1; 
+			}   
+
+			read(fd,buf,sizeof(buf));
+			write(fd,buf,sizeof(buf));
+				
+			close(fd);                                                                        
+			return 0;
+		}
+					
+							
+	6.编译执行应用程序
+		gcc test.c =======>a.out
+		./a.out 
+		open error: Permission denied
+		
+		sudo ./a.out  ===>执行成功
+		dmesg 如果看到下面这四句话，就说明应用程序
+		已经能够调用到驱动了。
+		
+	/home/linux/dc10-11/day2/mycdev/myled.c:myled_open:10
+	/home/linux/dc10-11/day2/mycdev/myled.c:myled_read:17
+	/home/linux/dc10-11/day2/mycdev/myled.c:myled_write:24
+	/home/linux/dc10-11/day2/mycdev/myled.c:myled_close:30
+
+				
+	vim的补全的修改：
+		/home/linux/.vimrc 
+		在139行左右
+		
+		/home/linux/.vim/snippets/c.snippets
+		修改补全的内容
+		
+		
+		
+		
+		
+		
+					
+					
+	
+	
+	
+	
