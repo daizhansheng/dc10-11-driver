@@ -1,0 +1,1 @@
+cmd_/home/linux/dc10-11-driver/day2/myled/myled.ko := arm-none-linux-gnueabi-ld -EL -r  -T /home/linux/kernel/kernel-3.4.39/scripts/module-common.lds --build-id  -o /home/linux/dc10-11-driver/day2/myled/myled.ko /home/linux/dc10-11-driver/day2/myled/myled.o /home/linux/dc10-11-driver/day2/myled/myled.mod.o

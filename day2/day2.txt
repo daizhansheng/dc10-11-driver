@@ -107,7 +107,7 @@ crw-r----- 1 root root 13, 33 Feb 22 09:56 myled
 	int register_chrdev(unsigned int major, const char *name,
                   const struct file_operations *fops)
 	功能：注册字符设备驱动
-	参数：
+	参数： 
 		@major:主设备号
 				major > 0 用户指定主设备号
 				major = 0 系统自动分配主设备号，
@@ -238,13 +238,31 @@ crw-r----- 1 root root 13, 33 Feb 22 09:56 myled
 		@n:拷贝的大小，单位是字节
 	返回值：成功返回0，失败返回未拷贝的字节的个数
 
-
 【2】在内核空间如何访问到LED的物理地址
+	驱动运行在3-4G内核空间，内核空间时一个虚拟的地址，
+	但是LED的寄存器是一个物理地址，在内核中不能够直接
+	操作物理地址，需要用到物理地址向虚拟地址映射的过程。
+	
+	#include <linux/io.h>
+	
+	void *ioremap(phys_addr_t offset, unsigned long size) 
+	功能：将物理地址映射成虚拟地址
+	参数：
+		@offset:物理地址
+		@size：映射的大小，单位是字节
+	返回值：成功返回虚拟地址，失败返回NULL
+	
+	void iounmap(void *addr) 
+	功能：取消映射
+	参数：
+		@addr:虚拟地址
+	返回值:无
+	
 		
-		
-		
-		
-					
+【3】使用字符设备驱动点灯
+	红灯   GPIOA28   0xc001a000
+	绿灯   GPIOE13   0xc001e000
+	蓝灯   GPIOB12   0xc001b000
 					
 	
 	
