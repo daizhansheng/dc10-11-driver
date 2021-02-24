@@ -1,0 +1,162 @@
+【1】ADC字符设备驱动
+	练习：
+		1.ADC字符设备驱动的编写
+		
+【2】自动创建设备节点
+	udev/mdev(mdev就是一个轻量级的udev,一般在嵌入式设备上用)
+	|
+	|-->udev就是一个用户空间的应用程序
+	
+user:	 
+		/dev/xxx	     <--------udev/mdev(恋爱顾问)
+											   |
+											   |
+		hotplug(前台)(/sys/class/目录/节点信息)|
+		   |
+-----------|-------------------------------
+kernel:    |
+		1.提交目录
+		2.在目录中提交设备节点的信息
+		
+		#include <linux/device.h>
+		
+		struct class * class_create(owner, name)
+		//void class_destroy(struct class *cls) 销毁
+		功能：在sys目录下去创建一个目录
+		参数：
+			@owner: THIS_MODULE 
+			@name : 目录的名字
+		功能：成功返回struct class的结构体指针，这个指针
+			  就是指向这个目录的句柄。struct class*cls;
+			  
+			  失败返回错误码指针(void *)(-5)
+			
+			struct class *cls;  
+			cls = class_create(THIS_MODULE,"hello");
+			if(IS_ERR(cls)){ //IS_ERR判断地址是否在内核顶端的4K区间
+							 //如果在内核顶端的4K那它就是错误
+				//出错误了
+				return  PTR_ERR(cls);
+				//将错误码指针强转外错误码
+			}
+	
+		struct device *device_create(struct class *class, 
+			struct device *parent,dev_t devt,
+			void *drvdata, const char *fmt, ...)
+		//void device_destroy(struct class *class, dev_t devt)
+		功能：去提交设备的信息
+		参数：
+			@class：class_create返回的句柄
+			@parent:父设备  NULL
+			@devt  :设备号
+			@drvdata:驱动的数据 NULL
+			@fmt    :设备节点的名字
+			
+		返回值：成功返回device的结构体指针，失败返回
+		        错误码指针
+		
+--------------------------------------------------------------
+
+
+【1】ioctl函数的使用
+
+user:
+	 #include <sys/ioctl.h>
+     int ioctl(int d, int request, ...);
+	 功能：通过ioctl函数可以去控制顶层的设备（io）
+	 参数：
+		@d：文件描述符
+		@request：这是一个请求码，它是一个32位的数
+			这个32位的数中有表示输入或者输出方向的位，
+			还有表示第三参数所传递的字节大小的位。
+			 31-30 (dir)
+				00 - no parameters: uses _IO macro
+				10 - read: _IOR
+				01 - write: _IOW
+				11 - read/write: _IOWR                                                            
+
+			29-16 size(第三个参数传递的字节的大小)
+				size of arguments
+
+			15-8  type(用一个字符唯一标识一个驱动)
+				ascii character supposedly
+				unique to each driver 
+
+			7-0   nr 功能 
+				function #
+			
+			通过_IO _IOR  _IOW _IOWR这四个宏中
+			的其中一个来封装成一个具备特定功能
+			的命令码
+		@...  :这是一个可变参数，可以传递也可以缺省
+	返回值：
+		成功返回0，失败返回-1并置位错误码
+---------------------------------------------------
+kernel:fops:
+	long (*unlocked_ioctl) (struct file *,
+		unsigned int cmd, unsigned long args);
+	功能：应用层的ioctl调用的时候，这个unlocked_ioctl
+	就会被执行，应用的第二个参数和第三个参数原封不动的
+	传递给unlocked_ioctl函数。
+
+	#define _IO(type,nr)		
+		_IOC(_IOC_NONE,(type),(nr),0)
+	#define _IOR(type,nr,size)	
+		_IOC(_IOC_READ,(type),(nr),(sizeof(size)))
+	#define _IOW(type,nr,size)
+		_IOC(_IOC_WRITE,(type),(nr),(sizeof(size)))
+	#define _IOWR(type,nr,size)	
+		_IOC(_IOC_READ|_IOC_WRITE,(type),(nr),(sizeof(size)))
+
+	#define _IOC(dir,type,nr,size) \ 这个宏就是合成一个32位的数的
+	(((dir)  << 30) | \
+	 ((type) << 8) | \
+	 ((nr)   << 0) | \
+	 ((size) << 16))
+
+
+	#define RGB_LED_RED_ON _IO('k',1)
+	#define RGB_LED_RED_OFF _IO('k',0)
+
+	#define ACCESS_WRITE_INT_DATA _IOW('k',0,int)
+
+	练习：
+		1.通过ioctl读写一个int类型的数据
+		2.通过ioctl写一个数组到内核空间
+			char buf[128]
+		3.通过ioctl读写一个结构体
+			struct aa{
+				char name[50];
+				char sex;
+				int age;
+			}
+
+	问：在驱动开发时，什么时候适合使用ioctl函数？
+		比如对于摄像头驱动来说，摄像头采集的图像的大小，
+		图像的格式就可以使用ioctl来控制完成设置，在比如
+		ADC的使用的分频率可以通过ioctl留个用户来设置，ADC
+		的启动与否也可以通过ioctl就给用户选择设置。等等
+		这些时候就适合通过ioctl来完成。
+
+
+	作业：
+		1.将ADC的代码修改支持ioctl设置硬件的一些属性
+		2.对ADC寄存器的操作使用readl和writel完成
+		
+	readl(addr) 	
+	功能：读取一个32位的数据
+	参数：
+		@addr：虚拟地址
+	返回值：读取到的值
+	
+	writel(v, r)	
+	功能：向一个地址中写23位的数据
+	参数：
+		@v:要写的值
+		@r:虚拟地址
+	
+	eg:
+	writel(readl(virt_addr[0]+9) &(~(3<<24)),virt_addr[0]+9);
+	
+	
+		
