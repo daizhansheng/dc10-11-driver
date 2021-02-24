@@ -131,7 +131,7 @@ kernel:fops:
 				int age;
 			}
 
-
+	问：在驱动开发时，什么时候适合使用ioctl函数？
 
 
 
