@@ -1,0 +1,1 @@
+cmd_/home/linux/dc10-11-driver/day3/myadc/myadc.ko := arm-none-linux-gnueabi-ld -EL -r  -T /home/linux/kernel/kernel-3.4.39/scripts/module-common.lds --build-id  -o /home/linux/dc10-11-driver/day3/myadc/myadc.ko /home/linux/dc10-11-driver/day3/myadc/myadc.o /home/linux/dc10-11-driver/day3/myadc/myadc.mod.o
