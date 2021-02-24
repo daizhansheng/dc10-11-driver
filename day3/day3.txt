@@ -1,0 +1,63 @@
+【1】ADC字符设备驱动
+	练习：
+		1.ADC字符设备驱动的编写
+		
+【2】自动创建设备节点
+	udev/mdev(mdev就是一个轻量级的udev,一般在嵌入式设备上用)
+	|
+	|-->udev就是一个用户空间的应用程序
+	
+user:	 
+		/dev/xxx	     <--------udev/mdev(恋爱顾问)
+											   |
+											   |
+		hotplug(前台)(/sys/class/目录/节点信息)|
+		   |
+-----------|-------------------------------
+kernel:    |
+		1.提交目录
+		2.在目录中提交设备节点的信息
+		
+		#include <linux/device.h>
+		
+		struct class * class_create(owner, name)
+		//void class_destroy(struct class *cls) 销毁
+		功能：在sys目录下去创建一个目录
+		参数：
+			@owner: THIS_MODULE 
+			@name : 目录的名字
+		功能：成功返回struct class的结构体指针，这个指针
+			  就是指向这个目录的句柄。struct class*cls;
+			  
+			  失败返回错误码指针(void *)(-5)
+			
+			struct class *cls;  
+			cls = class_create(THIS_MODULE,"hello");
+			if(IS_ERR(cls)){ //IS_ERR判断地址是否在内核顶端的4K区间
+							 //如果在内核顶端的4K那它就是错误
+				//出错误了
+				return  PTR_ERR(cls);
+				//将错误码指针强转外错误码
+			}
+	
+		struct device *device_create(struct class *class, 
+			struct device *parent,dev_t devt,
+			void *drvdata, const char *fmt, ...)
+		//void device_destroy(struct class *class, dev_t devt)
+		功能：去提交设备的信息
+		参数：
+			@class：class_create返回的句柄
+			@parent:父设备  NULL
+			@devt  :设备号
+			@drvdata:驱动的数据 NULL
+			@fmt    :设备节点的名字
+			
+		返回值：成功返回device的结构体指针，失败返回
+		        错误码指针
+		
+		
+		
+		
+		
+		
+		
