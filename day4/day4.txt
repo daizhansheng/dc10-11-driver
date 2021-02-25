@@ -1,0 +1,144 @@
+【1】字符设备驱动的框架
+user:
+	open("/dev/myled",);  read();   write();  close();
+		   |
+		   |--ls -i----->inode号<---文件系统识别文件的标号
+						   |
+---------------------------|--------------
+kernel:                    |
+					struct inode{
+						umode_t i_mode; //文件权限
+						uid_t	i_uid;  //用户的id
+						gid_t	i_gid;  //组的id
+						unsigned long	i_ino; //inode号
+						dev_t	i_rdev; //设备号
+						union {
+							struct block_device	*i_bdev;
+							//块设备驱动的结构体
+							struct cdev		*i_cdev;
+							//字符设备驱动的结构体
+						};
+
+					}
+					
+		字符设备驱动
+		struct cdev *i_cdev;
+		dev_t  i_rdev;
+		---------			
+	   |		 |
+	   |         |
+	   |         |
+	   -----------
+	  struct cdev {
+		const struct file_operations *ops;
+		//操作方法结构体
+		struct list_head list;
+		//内核链表（cdev放入到了内核的链表中）
+		dev_t dev;
+		//设备号
+		unsigned int count;
+		//设备的个数
+	 };
+	   
+------------------------------------------
+hardware:   LED
+
+问：inode是干什么的？什么时候产生的inode？	
+	只要一个文件存在，那它就对应一个inode结构体，
+	这个inode结构体就是用来描述这个文件的性信息的。
+	通过inode就可以唯一找到一个inode结构体
+	
+问：字符设备驱动的编写流程？（分步）
+	1.分配对象
+		struct cdev cdev;
+		struct cdev *cdev;
+		struct cdev *cdev_alloc(void)
+		功能:为字符设备驱动的对象分配内存
+			：(如果内存申请成功会初始化cdev中的链表)
+		参数：
+			@无
+		返回值：成功返回结构体指针，失败返回NULL
+		
+		void kfree(void *p)
+		功能：释放cdev结构体指针的内存
+		参数：
+			@p:cdev的结构体的首地址
+		返回值：无
+		
+	2.对象的初始化
+		void cdev_init(struct cdev *cdev,
+			const struct file_operations *fops)
+		功能：初始化cdev结构体（fops）
+		参数：
+			@cdev:cdev的结构体指针
+			@fops:操作方法结构体指针
+		返回值：无
+		
+		申请设备号：
+			int register_chrdev_region(dev_t from, 
+				unsigned count, const char *name)
+			功能:静态指定想要注册的设备号
+			参数：
+				@from:设备号的起始的值
+				@count:个数
+				@name:设备驱动的名字
+			返回值：成功返回0，失败返回错误码
+			
+			int alloc_chrdev_region(dev_t *dev, 
+				unsigned baseminor, unsigned count,
+				const char *name)
+			功能：动态申请设备号
+			参数：
+				@dev:申请到的设备号
+				@baseminor:次设备号的起始的值
+				@count:个数
+				@name:名字
+			返回值：成功返回0，失败返回错误码			
+			
+			void unregister_chrdev_region(dev_t from, unsigned count)
+			功能：向系统归还设备号
+			参数：
+				@from:设备号的起始的值
+				@count:个数
+			返回值：无
+	3.对象的注册
+		int cdev_add(struct cdev *p, 
+			dev_t dev, unsigned count)
+		功能：字符设备驱动的注册
+		参数：
+			@p:cdev的结构体指针
+			@dev:设备号
+			@count：个数
+		返回值：成功返回0，失败返回错误码
+		
+	4.对象的注销
+		void cdev_del(struct cdev *p)
+		功能：注销一个字符设备驱动
+		参数：
+			@p:cdev的结构体指针
+		返回值：无
+
+
+
+	练习：
+		1.字符设备驱动分步实现的流程
+	
+	
+	
+	
+	
+	
+	
+问：file结构体的功能是什么？什么时候产生的？
+
+
+
+
+
+
+
+
+
+
+	
+	
