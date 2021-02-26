@@ -65,24 +65,110 @@
 			//定义并初始化原子变量
 			
 			上锁：
-			atomic_inc_and_test(v)
+			atomic_inc_and_test(&atm)
 			//让原子变量的值加1和0比较，如果结果为0，表示
 			//获取锁成功了，返回真，如果结果不为0，表示
 			//获取锁失败了，返回假
 			
-			atomic_dec_and_test(v)
+			atomic_dec_and_test(&atm)
 			//让原子变量的值减1和0比较，如果结果为0，表示
 			//获取锁成功了，返回真，如果结果不为0，表示
 			//获取锁失败了，返回假
 			
 			解锁：
-			atomic_inc(atomic_t *v)
+			atomic_inc(&atm)
 			//让原子变量的值加1
-			atomic_dec(atomic_t *v)
+			atomic_dec(&atm)
 			//让原子变量的值减1
 		
+----------------------------------------------------------------------
+【1】IO模型
+	1.非阻塞
+		当用户以非阻塞的方式打开一个文件的时候，
+		如果调用read函数去读取数据的时候，不管这个
+		数据是否准备好了，这个read函数都会立即返回。
+		open("/dev/mycdev0",O_RDWR|O_NONBLOCK);
+		read(fd,buf,sizeof(buf))
+		------------------------------------------
+		driver_open
+		driver_read(){
+			//不管硬件中的数据是否准备好了，都将
+			//数据理解返回到用户空间。
+		}
+		
+	2.阻塞
+		当用户以阻塞的方式打开一个文件的时候，
+		如果调用read函数去读取数据的时候，如果
+		硬件的数据没有准备好，此时阻塞。当硬件
+		中的数据准备好的时候，这个休眠的进程就
+		会被唤醒了，然后应用这个read就不在阻塞了
+		就能够拿到最新的数据了。
+		open("/dev/mycdev0",O_RDWR);
+		read(fd,buf,sizeof(buf))
+		---------------------------------
+		driver_open
+		driver_read(){
+			//如果用户已阻塞的形式去读取数据的时候，
+			//如果数据没有准备好，需要在这个read函数
+			//中让进程休眠。
+			
+			//1.判读用户打开文件的方式
+			if(file->f_flags & O_NONBLOCK){
+				//非阻塞
+			}else{
+				//2.如果condition为假休眠，为真不需要休眠
+				ret = wait_event_interruptible(wq,condition);
+				
+			}
+			
+		}
+		进程休眠的过程：
+			wait_queue_head_t wq;
+			//1.定义等待队列头
+			
+			init_waitqueue_head(q)	
+			//2.初始化等待队列头
+			
+			wait_event(wq, condition)
+			//（不可中断的等待态D）
+			wait_event_interruptible(wq, condition)
+			//3.（可中断的等待态S）
+			功能：实现阻塞的函数
+			参数：
+				@wq:等待队列头
+				@condition:condition代表数据是否准备好了
+						   condition为0数据没有准备好，进程需要休眠
+						   condition为真数据没有准备好，进程不需要休眠
+			返回值：成功返回返回0，失败返回错误码
+			
+		
+			阻塞函数的分析见：wait_event_interruptible.c这个文件
+		
+		唤醒的过程：
+			condition = 1;
+			wake_up(&wq);
+			wake_up_interruptible(&wq);
 			
 			
+			
+	3.IO多路复用
+	
+	
+	4.异步通知（信号驱动IO）
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 			
 			
 			
