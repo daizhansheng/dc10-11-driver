@@ -149,9 +149,30 @@
 			wake_up(&wq);
 			wake_up_interruptible(&wq);
 			
+		练习：
+			1.阻塞IO模型是实现
 			
-			
+
 	3.IO多路复用
+		在同一APP中想同时监听多个硬件的数据，此时
+		就是适合使用IO多路复用的机制select/poll/epoll。
+		使用select/poll/epoll同时监听多个硬件的数据，
+		如果硬件中有数据准备好了，select/poll/epoll就
+		会返回，然后就从准备好的文件描述符中将数据读取
+		到用户空间即可。
+		
+		fd1 = open("/dev/mycdev",);
+		fd2 = open("/dev/myxxxxx",);
+		将这个两个文件描述符放入到文件描述符的集合中
+		select/poll/epoll(都是对应驱动的poll函数)
+	------------------------------------------------
+	kernel：fops:
+		unsigned int (*poll) (struct file *, 
+			struct poll_table_struct *);
+	
+	
+	
+	
 	
 	
 	4.异步通知（信号驱动IO）
