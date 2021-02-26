@@ -28,13 +28,71 @@
 			void up(struct semaphore *sem);
 			//解锁
 		
-		
-		
-		
-		
-		
-		
-		
 	4.互斥体（掌握）
+		互斥体跟信号的特特点类似，当一个进程获取到互斥体
+		之后，另外一个进程也想获取这个互斥体，此时后一个
+		进程处于休眠状态。获取不到互斥体资源的时候，进程在
+		休眠前会稍等一会儿。所以互斥体使用用在时间很短的反复
+		进程状态切换的代码中。
 	
+		API:
+			struct mutex mutex;
+			//定义互斥体
+			mutex_init(&mutex);
+			//互斥体的初始化
+			
+			void  mutex_lock(struct mutex *lock)
+			//上锁
+			int mutex_trylock(struct mutex *lock)
+			//尝试获取锁，如果返回值是1表示获取锁成功了
+			//如果返回0表示获取锁失败了。
+			
+			void  mutex_unlock(struct mutex *lock)
+			//解锁
+		
 	5.原子操作（掌握）
+		原子操作的含义是把本次操作看成一个整体，在本次
+		操作的时候是不可以被打断了。原因这个原子变量的
+		赋值是通过内联汇编实现了。
+	
+		typedef struct {
+			int counter;
+		} atomic_t; 
+			
+		
+		API:
+			atomic_t atm = ATOMIC_INIT(1);
+			//定义并初始化原子变量
+			
+			上锁：
+			atomic_inc_and_test(v)
+			//让原子变量的值加1和0比较，如果结果为0，表示
+			//获取锁成功了，返回真，如果结果不为0，表示
+			//获取锁失败了，返回假
+			
+			atomic_dec_and_test(v)
+			//让原子变量的值减1和0比较，如果结果为0，表示
+			//获取锁成功了，返回真，如果结果不为0，表示
+			//获取锁失败了，返回假
+			
+			解锁：
+			atomic_inc(atomic_t *v)
+			//让原子变量的值加1
+			atomic_dec(atomic_t *v)
+			//让原子变量的值减1
+		
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+	
+	
+	
+	
