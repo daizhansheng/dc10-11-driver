@@ -20,12 +20,6 @@ int flags = 0;
 int mycdev_open(struct inode *inode, struct file *filp)
 {
 	spin_lock(&lock);
-	if(flags != 0){
-		spin_unlock(&lock);
-		return -EBUSY;
-	}
-	flags=1;
-	spin_unlock(&lock);
 	printk("%s:%s:%d\n",__FILE__,__func__,__LINE__);
 
 	return 0;
@@ -65,9 +59,6 @@ int  mycdev_close(struct inode *inode, struct file *filp)
 {
 	
 	printk("%s:%s:%d\n",__FILE__,__func__,__LINE__);
-	spin_lock(&lock);
-	flags=0;
-	spin_unlock(&lock);
 	return 0;
 }
 

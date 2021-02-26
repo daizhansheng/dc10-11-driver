@@ -1,0 +1,1 @@
+cmd_/home/linux/dc10-11-driver/day5/led_minor/mycdev.ko := arm-none-linux-gnueabi-ld -EL -r  -T /home/linux/kernel/kernel-3.4.39/scripts/module-common.lds --build-id  -o /home/linux/dc10-11-driver/day5/led_minor/mycdev.ko /home/linux/dc10-11-driver/day5/led_minor/mycdev.o /home/linux/dc10-11-driver/day5/led_minor/mycdev.mod.o

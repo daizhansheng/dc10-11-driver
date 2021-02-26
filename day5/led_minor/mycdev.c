@@ -6,27 +6,26 @@
 #include <linux/cdev.h>
 #include <linux/device.h>
 #include <linux/slab.h>
-
 #define CNAME "mycdev"
 #define COUNT 3
+#define RED 0
+#define GREEN 1
+#define BLUE 2
+
 struct cdev *cdev; 
 int major = 0;
 int minor = 0;
 struct class*cls;
 struct device *dev;
 char kbuf[128] = {0};
-spinlock_t lock; //定义自旋锁
-int flags = 0;
+
 int mycdev_open(struct inode *inode, struct file *filp)
 {
-	spin_lock(&lock);
-	if(flags != 0){
-		spin_unlock(&lock);
-		return -EBUSY;
-	}
-	flags=1;
-	spin_unlock(&lock);
+	int cur_minor_no;
+	cur_minor_no = MINOR(inode->i_rdev);
+	filp->private_data = (void *)cur_minor_no;
 	printk("%s:%s:%d\n",__FILE__,__func__,__LINE__);
+	
 
 	return 0;
 }
@@ -49,7 +48,8 @@ ssize_t  mycdev_write(struct file *filp,
 		const char __user *ubuf, size_t size, loff_t *offs)
 {
 	int ret;
-
+	int cur_minor_no = (int)filp->private_data;
+	
 	printk("%s:%s:%d\n",__FILE__,__func__,__LINE__);
 	if(size > sizeof(kbuf)) size = sizeof(kbuf);
 	ret = copy_from_user(kbuf,ubuf,size);
@@ -57,6 +57,32 @@ ssize_t  mycdev_write(struct file *filp,
 		printk("copy data from user error\n");
 		return -EINVAL; 
 	}
+	
+	switch(cur_minor_no){
+		case RED:
+			if(kbuf[0] == '1'){
+				printk("red light on\n");
+			}else{
+				printk("red ligt off\n");
+			}
+			break;
+		case GREEN:
+			if(kbuf[0] == '1'){
+				printk("green light on\n");
+			}else{
+				printk("green ligt off\n");
+			}
+			break;
+		case BLUE:
+			if(kbuf[0] == '1'){
+				printk("blue light on\n");
+			}else{
+				printk("blue ligt off\n");
+			}
+
+			break;
+	}
+	
 
 	return size;
 }
@@ -65,9 +91,7 @@ int  mycdev_close(struct inode *inode, struct file *filp)
 {
 	
 	printk("%s:%s:%d\n",__FILE__,__func__,__LINE__);
-	spin_lock(&lock);
-	flags=0;
-	spin_unlock(&lock);
+
 	return 0;
 }
 
@@ -135,9 +159,6 @@ static int __init mycdev_init(void)
 			goto ERR5;
 		}
 	}
-
-	//初始化自旋锁
-	spin_lock_init(&lock);
 		
 	return 0; //这里的return千万不要忘记写!!!!
 ERR5:
