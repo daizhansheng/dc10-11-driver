@@ -199,13 +199,70 @@ hardware   设备1    设备2
 		如何发信号？
 		void kill_fasync(struct fasync_struct **fp,SIGIO,POLL_IN)  
 
+	
+	练习：
+		1.异步通知的IO模型练习
 
+--------------------------------------------------------------------
+【1】linux内核中的中断
+	中断是基于硬件实现的，不管有没有linux内核，中断的异常
+	处理流程都是如下的四大步骤三小步：
+	
+	当异常产生时, ARM core:
+		拷贝 CPSR 到 SPSR_<mode>
+		设置适当的 CPSR 位： 
+			改变处理器状态进入 ARM 状态  
+			改变处理器模式进入相应的异常模式
+			设置中断禁止位禁止相应中断 (如果需要)
+		保存返回地址到 LR_<mode>
+		设置 PC 为相应的异常向量
+	返回时, 异常处理需要:
+		从 SPSR_<mode>恢复CPSR
+		从LR_<mode>恢复PC 
 
+	中断的执行的流程见：linux内核中断.png
 
+【2】在linux内核中注册中断
+	int request_irq(unsigned int irq, 
+		irq_handler_t handler, unsigned long flags,
+	    const char *name, void *dev)
+	功能：在linux内核中注册一个中断
+	参数：
+		@irq:软中断号
+			      A   B    C    D    E
+		    组号  0   1    2    3    4
+			gpiono          = m*32+n   //m组号，n组内偏移
+			irqno(软中断号) = gpio_to_irq(gpiono);
 
-
-
-
-
+		@handler:中断的处理函数
+			typedef irqreturn_t (*irq_handler_t)(int irqno, void *dev);
+			
+		@flags:中断的触发方式
+				IRQF_TRIGGER_NONE	  使用默认触发方式
+				IRQF_TRIGGER_RISING	  上升沿
+				IRQF_TRIGGER_FALLING  下降沿
+				IRQF_TRIGGER_HIGH	  高电平
+				IRQF_TRIGGER_LOW	  低电平
+				IRQF_DISABLED	     快速中断（在执行本中断的时候关闭其他中断）
+				IRQF_SHARED		     中断共享
+				
+		@name :中断的名字,通过如下命令可以查看
+			   cat /proc/interrupts 
+		@dev  :向中断处理函数传递的参数
+	返回值：成功返回0，失败返回错误码	
+	
+	
+	void free_irq(unsigned int irq, void *dev_id)
+	功能：注销中断
+	参数：
+		@irq:软中断号
+		@dev_id：request_irq的最后一个参数传递的值
+	返回值：无	
+	
+	
+	
+	
+	
+	
 
 
