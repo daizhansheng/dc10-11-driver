@@ -187,13 +187,17 @@ hardware   设备1    设备2
 
 	--------------------------------------------------
 	kernel:fops:
-		int (*fasync) (int, struct file *, int);
+		int (*fasync) (int fd, struct file *filp, int on);
 		功能：完成发信号用到的结构体对象的初始化
 		
+		grep ".fasync =" * -nR
+		
 		如何初始化？
+		int fasync_helper(int fd, struct file * filp, 
+			int on, struct fasync_struct **fapp)
 		
 		如何发信号？
-		
+		void kill_fasync(struct fasync_struct **fp,SIGIO,POLL_IN)  
 
 
 
