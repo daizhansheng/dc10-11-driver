@@ -1,0 +1,73 @@
+【1】IO多路复用
+	在同一APP中想同时监听多个硬件的数据，此时
+	就是适合使用IO多路复用的机制select/poll/epoll。
+	使用select/poll/epoll同时监听多个硬件的数据，
+	如果硬件中有数据准备好了，select/poll/epoll就
+	会返回，然后就从准备好的文件描述符中将数据读取
+	到用户空间即可。
+	
+	fd1 = open("/dev/mycdev",);
+	fd2 = open("/dev/myxxxxx",);
+	将这个两个文件描述符放入到文件描述符的集合中
+	select/poll/epoll(都是对应驱动的poll函数)
+	read(fd,buf,sizeof(buf));
+------------------(系统调用swi)-----------------
+kernel：|VFS：（虚拟文件系统层）
+		|sys_open   sys_read  sys_write  
+		|   sys_select
+		|
+		|
+		|---------------------------------------
+		|fops:
+		|unsigned int (*poll) (struct file *file, 
+		|	struct poll_table_struct *wait);
+		|1.定义unsigned int mask = 0;
+		|2.调用poll_wait(file,&wq,wait);
+		|  （不会让进程休眠，只是提交等待队列头）
+		|3.条件为真置位POLL_IN/POLL_OUT
+		|4.返回mask
+-------------------------------------------------------
+hardware   设备1    设备2
+	
+	
+	 sys_select函数的实现过程：
+		1.将文件描述符的集合从用户空间
+		  拷贝到内核空间（copy_from_user）。
+		2.遍历这些文件描述符，从文件描述符
+		  的表中取出一个文件描述符，通过文件
+		  描述符找到对应的驱动，并调用驱动的
+		  poll函数。
+		  
+		  fd->fd_array[fd]->file->fops->poll(file,wait);
+		  
+		  当调用驱动的poll函数的时候就可以拿到等待
+		  队列头并且还能够拿到mask的值。如果这个mask
+		  的值为0，继续遍历文件描述符表中的下一个文件描述符
+		  
+		3.如果上述编译的过程中所有的驱动返回的mask都为0，
+		  此时代表所有的驱动的数据都没有准备好，如果数据
+		  没有准备好，此时让进程休眠即可。如果有驱动的数据
+		  准备好了这个休眠的进程就会被唤醒了。唤醒之后再次
+		  执行2的步骤
+		
+		4.当mask的值不为0的时候就被mask对应的fd放入到准备好
+		  的文件描述符的集合中，然后将准备好的文件描述符拷贝
+		  到用户空间即可。
+		  
+			
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+	
+【2】异步通知（信号驱动IO）
