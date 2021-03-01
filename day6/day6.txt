@@ -68,14 +68,140 @@ hardware   设备1    设备2
 		 件描述符效率比较低。
 
 
+	    poll的特点
+		1.poll文件描述符没有个数限制
+		2.poll没有清空表的过程，效率比select高
+		3.poll被唤醒之后没有都需要重新遍历文
+		 件描述符效率比较低。
 
+		epoll的特点(本世纪最好用的IO多路复用机制)
+		1.epoll文件描述符没有个数限制
+		2.epoll没有清空表的过程，效率比select高
+		3.epoll被唤醒之后不需要遍历文件描述符，epoll
+		  是通过红黑树来实现的，准备好的文件描述符在
+		  红黑树的最左侧，所以可以直接拿到并返回文件
+		  描述符。
+		  //https://www.cnblogs.com/Slime-kk-tech/p/13357407.html
+		  //https://www.cnblogs.com/skywang12345/p/3245399.html
+		  //kernel-3.4.39/lib$ ls rbtree.c 
 
-
-
-
-
-
+	问：epoll如何使用的？
+	#include <sys/epoll.h>
+	int epoll_create(int size);
+	功能：创建一个epoll的实例
+	参数：
+		@size:监听文件描述符的个数
+		      现在这个值已经不再使用了，可以随便传递
+	返回值：成功返回文件描述符epfd，失败返回-1置位错误码
 	
-	
+	int epoll_ctl(int epfd, int op, 
+		int fd, struct epoll_event *event);
+	功能：控制文件描述符合在epfd中的增删改
+	参数：
+		@epfd:epoll的文件描述符
+		@op :增，删，改
+			EPOLL_CTL_ADD
+			EPOLL_CTL_DEL
+			EPOLL_CTL_MOD
+		@fd :要监听的文件描述符
+		@event:监听的事件的结构体
+		   typedef union epoll_data {
+               void        *ptr;
+               int          fd;  
+			   //赋值这个成员，读数据时使用
+               uint32_t     u32;
+               uint64_t     u64;
+           } epoll_data_t;
+
+           struct epoll_event {
+               uint32_t     events;     
+			   /* Epoll events  EPOLLIN/EPOLLOUT*/
+               epoll_data_t data;        /* User data variable */
+           };
+
+	返回值：成功返回0，失败返回-1并置位错误码
+		
+	int epoll_wait(int epfd, struct epoll_event *events,
+                      int maxevents, int timeout);
+	功能：阻塞等待要监听的文件描述符
+	参数：
+		@epfd:epoll的文件描述符
+		@events：返回的事件结构体
+		@maxevents:最大监听的文件描述符的个数
+		@timeout:超时时间
+			0：立即返回
+			>0:毫秒的超时时间
+			-1：不关心超时
+	返回值：成功返回准备好的文件描述符的个数
+			返回0表示超时时间到了
+			返回-1表示错误，并置位错误码
+			
 	
 【2】异步通知（信号驱动IO）
+	异步通知的IO模型，在应用程序通过signal注册一个
+	信号的处理函数。也就是让应用层的进程监听这个信号
+	当硬件中的数据准备好的时候，产生中断，在中断的处
+	理函数中给应用程序发信号即可。应用程序收到信号后
+	执行信号的处理函数，在信号处理函数中调用read函数
+	来读取数据即可。
+	
+	user
+		void handle_signal_func(int signo)
+		{
+			read(fd,buf,sizeof(buf));
+		}
+		//1.注册信号处理函数
+		signal(SIGIO,handle_signal_func);
+		
+		//2.通过如下两个步骤调用驱动的fasync函数
+		unsigned int flags=fcntl(fd,F_GETFL);
+		fcntl(fd,F_SETFL,flags|FASYNC);
+		
+		//3.告诉内核接口信号的进程是哪一个
+		fcntl(fd,F_SETOWN,getpid());
+	--------------------------------------------------
+		VFS: vi -t sys_fcntl
+		SYSCALL_DEFINE3(fcntl, unsigned int, 
+			fd, unsigned int, cmd, unsigned long, arg) {
+			
+			filp = fget_raw(fd);
+
+			err = do_fcntl(fd, cmd, arg, filp);
+			{
+				 switch (cmd) {
+				   case F_GETFL:
+						err = filp->f_flags;
+						break;
+					case F_SETFL:
+						err = setfl(fd, filp, arg);
+						break;
+				 }
+				
+			}
+			arg = filp->f_flags|FASYNC 
+		  if (((arg ^ filp->f_flags) & FASYNC) && filp->f_op &&                     
+				filp->f_op->fasync) {
+			error = filp->f_op->fasync(fd, filp, (arg & FASYNC) != 0);
+
+		}
+
+	--------------------------------------------------
+	kernel:fops:
+		int (*fasync) (int, struct file *, int);
+		功能：完成发信号用到的结构体对象的初始化
+		
+		如何初始化？
+		
+		如何发信号？
+		
+
+
+
+
+
+
+
+
+
+
+
