@@ -259,10 +259,54 @@ hardware   设备1    设备2
 		@dev_id：request_irq的最后一个参数传递的值
 	返回值：无	
 	
+【3】安装驱动的时候出现如下错误：
+	[root@farsight]#insmod farsight_irq.ko 
+	[   20.468000] register irq 146 error
+	insmod: can't insert 'farsight_irq.ko': Device or resource busy
+	猜测软中断号被占用了
+	
+	cat /proc/interrupts
+	146:     GPIO  nxp-keypad
+	154:     GPIO  nxp-keypad
+	
+	如何解决？
+	将这个“nxp-keypad”名对应的驱动从内核中卸载掉即可
+	grep "nxp-keypad" * -nR
+	arch/arm/mach-s5p6818/include/mach/devices.h:
+	48:#define DEV_NAME_KEYPAD  "nxp-keypad"
+
+	grep "DEV_NAME_KEYPAD" * -nR
+	drivers/input/keyboard/nxp_io_key.c:324:	
+	.name	= DEV_NAME_KEYPAD,
+
+	
+	如何将nxp_io_key.c从内核中选配掉
+	Makefile：
+		 obj-$(CONFIG_KEYBOARD_NXP_KEY)  += nxp_io_key.o       
+	
+	Kconfig：
+		config KEYBOARD_NXP_KEY                                                               
+		tristate "SLsiAP push Keypad support"
+		depends on ARCH_CPU_SLSI
+		help
+		  Say Y here to enable the gpio keypad on SLsiAP SoC based board.
+
+	make menuconfig：
+		 <> "SLsiAP push Keypad support"
+		
+	make uImage
+	
+	cp uImage ---->tftpboot
+	
+	重启开发板
 	
 	
-	
-	
-	
+	作业：
+		1.编写中断的代码
+		2.编写ADC（73）的驱动，
+		  要求加入中断，要求使用阻塞的IO模型读数据
+		
+		
+		
 
 
