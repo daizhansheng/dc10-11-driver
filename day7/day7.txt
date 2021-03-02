@@ -20,9 +20,92 @@
 	
 	#define IRQ_PHY_ADC    (41 + 32)
 
+【2】linux内核中断消抖
+	在arm裸机开发中直接加延时即可。
+	但在linux内核启动后，在中断的处理函数中是不允许
+	有延时或者耗时操作的。使用内核定时器来完成消抖。
 	
 	
+	1.分配对象
+		struct timer_list {
+			struct list_head entry; //定时器的链表
+			unsigned long expires;  //定时的时间
+			void (*function)(unsigned long data);//定时器的处理函数
+			unsigned long data; //向定时器处理函数传递的参数
+		};
+		struct timer_list mytimer;
+	2.对象的初始化
+		1.当前时间获取：jiffies（时钟节拍数）
+		（jiffies从内核启动开始一直运行的一个时间）
+		
+		2.加1走的时间：
+			.config ===>CONFIG_HZ=1000
+
+		mytimer.expires = jiffies + 10;
+		mytimer.function = timer_function;
+		mytimer.data = 0;
+		init_timer(&mytimer);
+	3.对象的注册
+		add_timer(&mytimer); //注册并启动定时，只是启动一次
+		
+		再次启动定时器：
+		int mod_timer(struct timer_list *timer, unsigned long expires)
 	
+	4.对象的注销
+		int del_timer(struct timer_list *timer)
 	
+【3】gpio子系统
+user	
+-------------------------------------------------
+kernel |设备驱动层：这是驱动工程师完成的代码
+	   |
+	   |-----------------------------------------
+	   |核心层：内核工程师编写的代码 gpiolib.c
+	   |-----------------------------------------
+	   |厂商的驱动代码：厂商已经编写了操作硬件的函数
+	   |接口了。
+-------------------------------------------------
+hardware  LED
+
+	API:#include <linux/gpio.h>
+		int gpio_request(unsigned gpio, const char *label)
+		功能:申请gpio去使用
+		参数：
+			@gpio：要使用的gpio的编号
+			@label:名字标号,NULL
+		返回值：成功返回0 失败返回错误码
+		
+		
+		int gpio_direction_input(unsigned gpio)
+		功能：设置gpio的方向为输入
+		参数：
+			@gpio:gpio号
+		返回值：成功返回0 失败返回错误码
+
+		int gpio_direction_output(unsigned gpio, int value)
+		功能：设置gpio的方向为输出
+		参数：
+			@gpio:gpio号
+			@value：0表述输出低电平，1表示输出高电平
+		返回值：成功返回0 失败返回错误码
+		
+		void gpio_set_value(unsigned gpio, int value)
+		功能；设置gpio输出的高低电平
+		参数：
+			@gpio:gpio号
+			@value：0表述输出低电平，1表示输出高电平
+		返回值：无
+		
+		int gpio_get_value(unsigned gpio)
+		功能：读取gpio的电平的值
+		参数：
+			@gpio:gpio号
+		返回值：0读取到的是低电平，1读取到的是高电平
+		
+		void gpio_free(unsigned gpio)
+		功能：释放gpio号
+		参数：
+			@gpio:gpio号
+		返回值：无
 	
 	
