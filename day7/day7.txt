@@ -1,0 +1,28 @@
+【1】复习
+	作业：
+	2.编写ADC（73）的驱动，
+	  要求加入中断，要求使用阻塞的IO模型读数据
+	
+	1.中断
+	2.字符设备驱动
+	3.IO模型-阻塞
+	4.地址的映射
+	5.readl和writel
+	6.copy_from_user/copy_to_user
+	7.自动创建设备节点
+		
+	控制的软中断号的获取方式？
+	find -name irqs.h
+	./arch/arm/mach-s5p6818/include/mach/irqs.h
+	
+	find -name s5p6818_irq.h
+	./arch/arm/mach-s5p6818/include/mach/s5p6818_irq.h
+	
+	#define IRQ_PHY_ADC    (41 + 32)
+
+	
+	
+	
+	
+	
+	
