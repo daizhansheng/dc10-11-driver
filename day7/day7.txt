@@ -159,10 +159,27 @@ hardware  LED
 		限制的，工作队列可以完全脱离中断执行。所以在工作队列中
 		可以做延时耗时甚至休眠的操作。
 	
-	
-	
-	
-	
+		struct work_struct {
+			atomic_long_t data; 
+			//这是工作队列中的原子变量
+			struct list_head entry;
+			//内核的链表
+			work_func_t func;
+			//工作队列的处理函数
+		};
+		
+		//1.分配对象
+		struct work_struct work;
+		
+		//2.初始化对象
+		void  mywork(struct work_struct *data)
+		{
+			
+		}
+		INIT_WORK(&work, mywork);
+		//3.调用执行
+		int schedule_work(struct work_struct *work)
+		
 	
 	
 	
