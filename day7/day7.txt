@@ -181,10 +181,97 @@ hardware  LED
 		int schedule_work(struct work_struct *work)
 		
 	
+	练习：
+		1.工作队列的实例
+	
+============================================================
+【1】platform总线驱动（平台总线驱动）
+	由于linux内核里面有各种总线，例如platform，i2c，spi
+	usb等众多的总线，内核就引入了设备模型来统一管理这些
+	总线。就是把一个驱动拆分成三个部分device,bus,driver。
+	device就代表的是设备的对象，bus是总线的对象，driver
+	代表的就是驱动。
+
+	platform总线驱动运用了分离的思想，将设备信息和设备驱动
+	分离，分离之后以后再进行平台移植的时候只需要修改设备信息
+	的部分代码即可，驱动的代码无需更改。
+	
+	设备信息端：
+	struct platform_device {
+		const char	* name;  
+		//用于匹配的名字
+		int		id;
+		//总线号，-1
+		struct device	dev;
+		//父类
+		u32		num_resources;
+		//设备信息的个数
+		struct resource	* resource;
+		//设备信息结构体
+	};
+	
+	struct device{
+		void	(*release)(struct device *dev);
+	}
+	
+	struct resource {     //设备信息结构体                                                                 
+		resource_size_t start;  0xc001a000   73
+		//资源起始地址
+		resource_size_t end;   0xc001a000+3  73
+		//资源的结束地址
+		#const char *name;
+		//资源的名字
+		unsigned long flags;  IORESOURCE_IO IORESOURCE_IRQ
+		//资源的类型
+			IORESOURCE_IO	
+			IORESOURCE_MEM	
+			IORESOURCE_IRQ	
+			IORESOURCE_DMA	
+		#struct resource *parent, *sibling, *child;
+		//链表
+	};
+
+	int platform_device_register(struct platform_device *pdev)
+	void platform_device_unregister(struct platform_device *pdev)
 	
 	
 	
+	总线：内核工程师完成的，提供设备驱动
+	和总线驱动注册和注销的方法，并提供设备
+	驱动和总线驱动匹配的过程。
+	struct bus_type platform_bus_type = {
+		.name		= "platform",
+		.match		= platform_match,
+	};
 	
+
+	设备驱动端：
+	struct platform_driver {
+		int (*probe)(struct platform_device *);
+		//匹配成功执行的函数
+		int (*remove)(struct platform_device *);
+		//分离的时候执行的函数
+		struct device_driver driver;
+		const struct platform_device_id *id_table;
+		//另外一种匹配的方法
+	};
+	
+	struct device_driver {
+		const char		*name; //用于匹配的名字
+	}
+
+	int platform_driver_register(struct platform_driver *drv)
+	void platform_driver_unregister(struct platform_driver *drv)
+
+
+
+	作业：
+		1.使用内核定时器完成中断消抖
+		2.将platform的实例编写完成
+		3.将今天课上的代码全部写一遍
+
+
+
 	
 	
 	
