@@ -1,0 +1,1 @@
+cmd_/home/linux/dc10-11-driver/day7/tasklet/irq_tasklet.ko := arm-none-linux-gnueabi-ld -EL -r  -T /home/linux/kernel/kernel-3.4.39/scripts/module-common.lds --build-id  -o /home/linux/dc10-11-driver/day7/tasklet/irq_tasklet.ko /home/linux/dc10-11-driver/day7/tasklet/irq_tasklet.o /home/linux/dc10-11-driver/day7/tasklet/irq_tasklet.mod.o

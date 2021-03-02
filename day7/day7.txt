@@ -108,4 +108,68 @@ hardware  LED
 			@gpio:gpio号
 		返回值：无
 	
+	练习：
+		1.内核定时器和gpio子系统的使用
+		2.尝试使用内核定时器对中断消抖
+	
+----------------------------------------------------------
+【1】中断底半部
+	在中断处理函数不允许做延时，耗时，甚至休眠的操作，
+	但是有时候又希望在中断到来的时候做这些事情，所有这
+	就产生的矛盾，内核为了解决这种矛盾的现象就引入中断
+	底半部的机制来解决来解决这个矛盾。例如在网卡中断到来
+	的时候希望在中断处理函数中从网卡芯片中读取网络的数据
+	这个读取数据的过程比较耗时，就可以把这个耗时的操作放入
+	中中断底半部中完成。内核中推出的中断底半部的机制有软
+	中断，tasklet，工作队列。
+	
+	软中断：软中断工作在中断上下文，软中断在使用的时候是有
+		个数限制的（32个）要求驱动工程师尽可能的不要使用软
+		中断。
+	
+	tasklet：tasklet工作在中断上下文，它是基于软中断实现的，
+		没有个数限制。tasklet不能够脱离中断执行。可以在tasklet
+		中做相对耗时的操作，但是不要做长延时或者休眠的操作。
+		
+		struct tasklet_struct
+		{
+			struct tasklet_struct *next;
+			//内核链表
+			unsigned long state;
+			//是否调用底半部执行的一个状态
+			atomic_t count;
+			//代表被调用执行的次数
+			void (*func)(unsigned long);
+			//中断的底半部处理函数
+			unsigned long data;
+			//向底半部处理函数传递的参数
+		};
+		
+		//1.分配tasklet的结构体对象
+		struct tasklet_struct tasklet;
+		//2.初始化
+		void tasklet_init(struct tasklet_struct *tasklet,
+                     void (*func)(unsigned long),
+                     unsigned long data)
+		//3.调用执行
+		void tasklet_schedule(struct tasklet_struct *tasklet);
+		
+		
+	工作队列：工作队列工作在进程上下文，工作队列也是没有个数
+		限制的，工作队列可以完全脱离中断执行。所以在工作队列中
+		可以做延时耗时甚至休眠的操作。
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
