@@ -131,9 +131,63 @@ hardware:   |------------|	scl       ------------
 		void i2c_del_driver(struct i2c_driver *driver)
 		
 		
-		module_i2c_driver(i2c_driver);
+		module_i2c_driver(i2c_driver的变量);
 		//这个宏完成入口，出口，注册，注销的功能
 		
+	练习：
+		1.i2c总线驱动的实例
+		
+		
+		                                                                                            
+		
+	如何向控制器驱动提交用于匹配的名字？
+	int i2c_register_board_info(int busnum,
+		struct i2c_board_info const *info, unsigned len)
+	功能：向控制器驱动提交信息
+	参数：
+		@busnum:总线号（控制器的序号）mma8451q使用的是总线号2
+		@info  :提交的信息结构体
+		struct i2c_board_info {
+			char		type[I2C_NAME_SIZE];
+			//用于匹配的名字
+			unsigned short	addr;
+			//从机地址 0x1c
+		};
+		@len :提交的信息结构体的个数
+	返回值：成功返回0，失败返回错误码
+	
+	上述的代码在如下的文件中调用即可。
+	kernel-3.4.39/arch/arm/plat-s5p6818/fs6818$ vi device.c
+	 719 #include <linux/i2c.h>
+	 720 
+	 721 static struct i2c_board_info  mma8451q = {
+	 722         .type   = "mma8451q",
+	 723         .addr   = 0x1c,
+	 724 };                                                                               
+	1905 #elif defined(CONFIG_SENSORS_MMA8451) || defined(CONFIG_MXC_MMA8451_MODULE)
+	1906     printk("plat: add g-sensor mma8451\n");
+	1907         //i2c_register_board_info(2, &mma8451_i2c_bdi, 1);
+	1908 #endif
+	1909       i2c_register_board_info(2, &mma8451q, 1);
+	 
+	make uImage (重新编译内核)
+	
+	cp arch/arm/boot/uImage ~/tftpboot  (将内核拷贝到tftpboot目录)
+	
+	重启开发（加载编译好的内核）
+	
+	重新安装驱动看到如下现象：
+	[root@farsight]#insmod mma8451q.ko 
+	[   23.481000] /home/linux/dc10-11-driver/day8/mma8451q/mma8451q.c:mma8451q_probe:8
+	[root@farsight]#rmmod mma8451q
+	[   29.442000] /home/linux/dc10-11-driver/day8/mma8451q/mma8451q.c:mma8451q_remove:13
+	[root@farsight]#
+
+
+
+
+
+	
 		
 		
 		
