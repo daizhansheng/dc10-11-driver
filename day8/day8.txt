@@ -45,11 +45,36 @@
 	module_init(platform_adc_init); 
 	module_exit(platform_adc_exit);
 
+【3】plafrom的idtable的匹配方式
+	struct platform_device_id *id_table;
+	//另外一种匹配的方法
 			
+	struct platform_device_id {
+		char name[PLATFORM_NAME_SIZE];
+		//用于匹配的名字
+		kernel_ulong_t driver_data
+		//向驱动传递的数据		
+	};	
 		
 		
+	struct platform_device_id idtable[] = {
+		[0] = {
+			.name = "ds18b20",
+			.driver_data = 0,
+		},
+		[1] = {
+			.name = "ds18b20a"
+			.driver_data = 1,
+		},
+		[2] = {
+			.name = "ds18b20b"
+			.driver_data = 2,
+		},
+		[3] = {
+			/*end表示结束*/
+		}
 		
-		
+	};
 		
 		
 		
