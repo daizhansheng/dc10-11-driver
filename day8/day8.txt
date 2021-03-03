@@ -10,3 +10,47 @@
 	返回值：
 		成功返回资源的结构体指针，
 		失败返回NULL
+	
+	int platform_get_irq(struct platform_device *dev,
+		unsigned int num)
+	功能：获取中断类型的资源
+	参数：
+		@dev :platform_device的结构体指针
+		@num :IORESOURCE_IRQ类型中的第几个资源
+	返回值：成功返回中断号，失败返回错误码
+	
+	练习：
+		1.在驱动中使用获取资源的函数来获取资源
+		
+【2】module_platform_driver宏的解析
+
+	#define module_platform_driver(__platform_driver) 
+    module_driver(platform_adc,
+			platform_driver_register,                       
+            platform_driver_unregister)
+			
+	#define module_driver(platform_adc,
+		platform_driver_register, platform_driver_unregister) 
+		
+	module_platform_driver(platform_adc)
+	
+	static int __init platform_adc_init(void) 
+	{ 
+		return platform_driver_register(&platform_adc); 
+	}                                                                                   
+	static void __exit platform_adc_exit(void) 
+	{                 
+		platform_driver_unregister(&platform_adc); 
+	} 
+	module_init(platform_adc_init); 
+	module_exit(platform_adc_exit);
+
+			
+		
+		
+		
+		
+		
+		
+		
+		
