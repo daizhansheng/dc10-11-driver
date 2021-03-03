@@ -1,0 +1,12 @@
+【1】platform获取设备信息的过程
+	struct resource *platform_get_resource(
+		struct platform_device *dev,
+		unsigned int type, unsigned int num)
+	功能：获取设备信息
+	参数：
+		@dev :platform_device的结构体指针
+		@type:资源的类型
+		@num :同类类型中的第几个资源
+	返回值：
+		成功返回资源的结构体指针，
+		失败返回NULL
