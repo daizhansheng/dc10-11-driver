@@ -59,15 +59,15 @@
 		
 	struct platform_device_id idtable[] = {
 		[0] = {
-			.name = "ds18b20",
+			.name = "ds18b20a",
 			.driver_data = 0,
 		},
 		[1] = {
-			.name = "ds18b20a"
+			.name = "ds18b20b"
 			.driver_data = 1,
 		},
 		[2] = {
-			.name = "ds18b20b"
+			.name = "ds18b20c"
 			.driver_data = 2,
 		},
 		[3] = {
@@ -110,7 +110,7 @@ hardware:   |------------|	scl       ------------
 			--------------            ------------
 
 
-	i2c设备驱动的编写？
+	[1]i2c设备驱动的编写？
 	1.i2c设备驱动分配的对象
 		struct i2c_driver {
 			int (*probe)(struct i2c_client *, const struct i2c_device_id *);
@@ -140,7 +140,7 @@ hardware:   |------------|	scl       ------------
 		
 		                                                                                            
 		
-	如何向控制器驱动提交用于匹配的名字？
+	[2]如何向控制器驱动提交用于匹配的名字？
 	int i2c_register_board_info(int busnum,
 		struct i2c_board_info const *info, unsigned len)
 	功能：向控制器驱动提交信息
@@ -156,6 +156,7 @@ hardware:   |------------|	scl       ------------
 		@len :提交的信息结构体的个数
 	返回值：成功返回0，失败返回错误码
 	
+	[3]如何添加用于匹配的名字？
 	上述的代码在如下的文件中调用即可。
 	kernel-3.4.39/arch/arm/plat-s5p6818/fs6818$ vi device.c
 	 719 #include <linux/i2c.h>
