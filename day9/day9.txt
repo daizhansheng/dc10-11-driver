@@ -60,8 +60,7 @@
 				.buf   = wbuf,
 			},			
 		};
-		
-		
+
 		ret = i2c_transfer(client->adapter, 
 			w_msg, ARRAY_SIZE(w_msg));
 		if(ret != ARRAY_SIZE(w_msg)){
@@ -80,13 +79,13 @@
 		char rbuf[] = {reg};
 		struct i2c_msg r_msg[] = {
 			[0] = {
-				.addr  = client->add,
+				.addr  = client->addr,
 				.flags = 0,
 				.len   = 1,
 				.buf   = rbuf,
 			},
 			[1] = {
-				.addr  = client->add,
+				.addr  = client->addr,
 				.flags = I2C_M_RD,
 				.len   = 1,
 				.buf   = &val,
@@ -103,12 +102,120 @@
 		return val;
 	}
 	
-	
-	
 	练习：
 		1.封装i2c读写函数并完成设备校验
+-------------------------------------------------------
 
+【1】块设备驱动
+	磁头：一个磁盘有多少个面就有多少个磁头
+	磁道：在一个磁头上可以有很多环，这些环就叫做磁道
+	扇区：磁道上访问数据的最小的单位就是扇区，一个
+		  扇区的大小就是512字节
+		  
+	1block = 512字节  1024字节  2048字节  4096字节
+	1扇区  = 512字节
+	
+	块设备的能存储的数据=磁头*磁道*扇区*512
+		
+【2】块设备的框架		
+user:
+	open     read    write    close
+-------------------(io请求)-----------------------------------
+kernel	|VFS: （block_device）
+	    |	将用户的io请求转化成BIO(block，input ,output),
+	    |	在物理内存上连续的bio会被合成以request，这个request
+	    |	会被放到内核的一个队列上。
+		|
+	    |---------------------------------------------------------
+	    |driver:gendisk
+	    |	1.分配对象
+	    |	2.对象初始化
+	    |	3.初始化一个队列  head----request(read)----request(write)---...
+	    |	4.硬盘设备的初始化
+	    |	5.注册、注销
+------------------------------------------------------------------		
+haredware :   分配的内存（模拟真实的设备）（1M）
+			 		
+		
+	1.gendisk的结构体对象
+	struct gendisk {                                                                                                                                                                                                        
+		int major;   //块设备的主设备号
+		int first_minor; //起始的次设备号
+		int minors; //设备的个数，分区的个数
+		char disk_name[DISK_NAME_LEN]; //磁盘的名字
+		struct disk_part_tbl  *part_tbl;
+		//磁盘的分区表的首地址
+		struct hd_struct part0;
+		//part0分区的描述
 
+		const struct block_device_operations *fops;
+		//块设备的操作方法结构体
+		
+		struct request_queue *queue;
+		//队列（重要）
+		
+		void *private_data;
+		//私有数据
+	};
+
+	分区的结构体
+	struct hd_struct {
+		sector_t start_sect; //起始的扇区号
+		sector_t nr_sects;   //扇区的个数
+		sector_t alignment_offset;//对齐的方式                                                                                                     
+		int  partno;        //分区号
+	};
+	
+	//块设备的操作方法结构体
+	struct block_device_operations {
+		int (*open) (struct block_device *, fmode_t);
+		int (*release) (struct gendisk *, fmode_t);
+		int (*ioctl) (struct block_device *, fmode_t, unsigned, unsigned long);
+		int (*getgeo)(struct block_device *, struct hd_geometry *);	
+		//设置磁盘的磁头，磁道，扇区的个数的。
+	}
+		
+	2.结构体对象的初始化
+		struct gendisk *mydisk;
+		
+		struct gendisk *alloc_disk(int minors)
+		//void put_disk(struct gendisk *disk)
+		//归还引用计数
+		功能：分配gendisk的内存，然后完成必要的初始化
+		参数：
+			@minors:分区的个数
+		返回值：成功返回分配到的内存的首地址，失败返回NULL
+		
+		
+		int register_blkdev(unsigned int major, const char *name)
+		//void unregister_blkdev(unsigned int major, const char *name)
+		功能：申请设备设备驱动的主设备号
+		参数：
+			@major ： 0：自动申请[1..255] 
+			          >0 :静态指定 0-2^12
+			@name  :名字  cat /proc/devices
+		返回值：	
+				major=0 ;成功返回主设备号，失败返回错误码
+				major>0 :成功返回0 ，失败返回错误码
+				
+		struct request_queue *blk_init_queue(request_fn_proc *rfn,
+		spinlock_t *lock)
+		//void blk_cleanup_queue(struct request_queue *q)
+		功能：初始化一个队列
+		参数：
+			@rfn:函数指针，队列的处理函数
+			typedef void (request_fn_proc) (struct request_queue *q);
+			@lock:自旋锁
+		返回值：成功返回结构体指针，失败返回NULL 
+		
+		void set_capacity(struct gendisk *disk, sector_t size)
+		功能：设置磁盘的容量
+		
+	3.注册、注销
+		void add_disk(struct gendisk *disk)
+		//注册
+		void del_gendisk(struct gendisk *disk)
+		//注销
 
 
 

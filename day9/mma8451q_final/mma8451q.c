@@ -53,7 +53,7 @@ int i2c_write_reg(struct i2c_client *client,char reg,char val)
 int i2c_read_reg(struct i2c_client *client,char reg)
 {	
 	int ret;
-	char val;
+	unsigned char val;
 	char rbuf[] = {reg};
 	struct i2c_msg r_msg[] = {
 		[0] = {
@@ -66,7 +66,7 @@ int i2c_read_reg(struct i2c_client *client,char reg)
 			.addr  = client->addr,
 			.flags = I2C_M_RD,
 			.len   = 1,
-			.buf   = &val,
+			.buf   = &val, 
 		},
 	};
 	

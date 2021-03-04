@@ -1,0 +1,181 @@
+【1】spi简介
+    SPI是串行外设接口(Serial Peripheral Interface)的缩写。是 Motorola 公司推
+	出的一种同步串行接口技术，是一种高速的，全双工，同步的通信总线。
+	SPI优点
+		支持全双工通信
+		通信简单
+		数据传输速率快
+		
+	缺点
+		没有指定的流控制，没有应答机制确认是否接收到数据，
+		所以跟IIC总线协议比，较在数据的可靠性上有一定的缺陷。
+		
+		1）：高速、同步、全双工、非差分、总线式
+		2）：主从机通信模式
+
+【2】spi时序解析
+	可以一主机多从机，具体和那个从机通讯通过cs片选决定。
+	MOSI  ：主机输出，从机输入
+	MISO  ：主机输入，从机输出
+	SCK   ：时钟线(只能主机控制)
+	CS    ：片选线
+	
+	数据传输的四种方式：
+	CPOL(时钟极性) : 0:时钟起始位低电平      1:时钟起始为高电平  
+	CPHA(时钟相位) ：0:第一个跳边沿采样      1:第二个跳边沿采样
+	
+【3】spi的驱动框架
+	框架分析：
+		app:	  open  close read  write		
+				-----------------------------
+		内核:  1.spi_driver(驱动spi设备)
+				  drv_open drv_close drv_read drv_write
+				  
+				----------------------------------------
+			   2.spi核心层
+				  spi驱动  spi控制器  spi设备的相关结构体
+				  及注册注销函数封装
+				----------------------------------------
+			   3.spi控制器驱动层(驱动spi控制器)（内核或者芯片厂家提供）
+				  实现spi控制器的驱动
+				  
+				----------------------------------------
+		硬件： 4.spi控制器
+				---|-------|--------|-------------------
+				mcp2515   mpu6050
+				5.spi设备
+	硬件：  
+	
+	
+【4】spi相关的结构体
+	1.控制器端：
+	struct spi_master {  
+			 struct device   dev;  
+			  s16         bus_num;  /*bus_num为该控制器对应的SPI总线号*/
+			  u16         num_chipselect; /*num_chipselect 控制器支持的片选数量，即能支持多少个spi设备*/
+			  /*setup函数是设置SPI总线的模式，时钟等的初始化函数， 针对设备设置SPI的
+			  工作时钟及数据传输模式等,在spi_add_device函数中调用*/
+			  int         (*setup)(struct spi_device *spi);  
+			  /*实现SPI总线读写方法的函数。实现数据的双向传输，可能会睡眠*/
+			  int        (*transfer)(struct spi_device *spi, struct spi_message *mesg); 
+			  void     (*cleanup)(struct spi_device *spi);  /*注销时候调用*/
+			  struct list_head		queue;
+		};
+	
+	int spi_register_master(struct spi_master *master)  //控制器端注册
+	void spi_unregister_master(struct spi_master *master)//控制器端注销
+	
+	
+	2.设备驱动端：
+	struct spi_driver {  
+             int    (*probe)(struct spi_device *spi);  
+             int    (*remove)(struct spi_device *spi);  
+             struct device_driver    driver; 
+			 struct spi_device_id *id_table; 
+			  …
+	 }; 
+	 int spi_register_driver(struct spi_driver *sdrv);      //设备注册
+	 void spi_unregister_driver(struct spi_driver *sdrv);   //设备注销
+	 struct spi_driver tt;
+	 module_spi_driver(tt);
+	 
+	3.匹配成功创建结构体：
+		struct spi_device {  
+	        struct device       dev;  /*代表该spi设备的device结构*/
+	        struct spi_master   *master;  /*指向该spi设备所使用的控制器*/
+	        u32         max_speed_hz;  /*该设备的最大工作时钟频率*/
+	        u8          chip_select;   /*在控制器中的片选引脚编号索引*/
+	        u8          mode;     /*设备的工作模式，包括时钟格式，片选信号的有效电平等等*/
+	        u8          bits_per_word;   /*设备每个单位数据所需要的比特数*/
+	        int         irq;   /*设备使用的irq编号*/
+	       void       *controller_state;   
+	       void       *controller_data;   
+	       char         modalias[32];   /*该设备的名字，用于spi总线和驱动进行配对*/
+		}; 
+
+	5.设备信息：
+		struct spi_board_info {
+				char	modalias[SPI_NAME_SIZE];
+				const void	*platform_data;
+				void	*controller_data;
+				int	irq;
+				u32	max_speed_hz;
+				u16	bus_num;
+				u16	chip_select;
+				u8	mode;
+			}; 
+		int spi_register_board_info(struct spi_board_info const *info, unsigned n);
+		
+			
+		struct spi_board_info spi0_mcp2515_info[] __initdata = {
+		{
+			[0] = {
+				.modalias       = "spi_mcp2515",
+				.irq            = IRQ_GPIO_START + PAD_GPIO_B + 25,
+				.max_speed_hz   = 10 * 1000 * 1000,
+				.bus_num        = 0, 
+				.chip_select    = 0, 
+				.mode           = SPI_MODE_0,                                   
+				.controller_data = &spi0_info[0],
+			}   
+		};
+		 spi_register_board_info(spi0_mcp2515_info, ARRAY_SIZE(spi0_mcp2515_info));
+			
+	6.消息结构体：
+	   struct spi_transfer {
+			const void	*tx_buf;
+			void	*rx_buf;
+			unsigned	len;
+			dma_addr_t	tx_dma;
+			dma_addr_t	rx_dma;
+			unsigned	cs_change:1;
+			u8		bits_per_word;
+			u16		delay_usecs;
+			u32		speed_hz;
+			struct list_head transfer_list;
+		};
+		struct spi_message {
+			struct list_head	transfers;
+			struct spi_device	*spi;
+			unsigned		is_dma_mapped:1;
+			void		 (*complete)(void *context);
+			void		*context;
+			unsigned		actual_length;
+			int		status;
+			struct list_head	queue;
+			void		*state;
+		};
+		1.分配一个自带数个spi_transfer结构的spi_message
+		static inline struct spi_message *spi_message_alloc(unsigned ntrans, 
+																gfp_t flags)；
+		2.初始化spi_message结构
+		static inline void spi_message_init(struct spi_message *m)；
+
+		3.将spi_transfer加入到spi_message中
+		static inline void   spi_message_add_tail(struct spi_transfer *t,struct spi_message *m)；
+
+		4.移除一个spi_transfer
+		static inline void  spi_transfer_del(struct spi_transfer *t)；
+
+		5.发起一个spi_message的传送操作
+		异步版本：int spi_async(struct spi_device *spi, struct spi_message *message);
+		同步版本：int spi_sync(struct spi_device *spi, struct spi_message *message);
+
+	
+	7.读写操作：
+		spi写操作
+			static inline int spi_write(struct spi_device *spi, const void *buf, size_t len)
+		spi读操作
+			static inline int spi_read(struct spi_device *spi, void *buf, size_t len)
+		spi写-读操作
+			int spi_write_then_read(struct spi_device *spi,const void *txbuf,unsigned n_tx,void *rxbuf, unsigned n_rx)
+
+
+
+
+
+
+
+
+
+
