@@ -216,8 +216,80 @@ haredware :   分配的内存（模拟真实的设备）（1M）
 		//注册
 		void del_gendisk(struct gendisk *disk)
 		//注销
+		
+	练习：
+		1.编写虚拟块设备驱动的实例
 
 
+【3】块设备驱动的API
+	struct request *blk_fetch_request(struct request_queue *q)
+	功能：从请求队列中获取request
+	参数：
+		@q:请求队列头
+	返回值：成功返回获取到的request的指针，失败返回NULL
+	
+	rq_data_dir(rq)	
+	功能：从request获取本次是读还是写
+	参数：
+		@rq:request
+	返回值：READ 用户要读   WRITE用户要写
+	
+	struct request {
+		sector_t __sector; //操作的扇区号
+		unsigned int __data_len; //操作的数据总和的大小
+		char *buffer;	   //用户的首地址
+		unsigned int cmd_flags; //读写的方向READ 0  WRITE 1
+		 bio->bi_size;    //本次biod读写的大小
+	}
+	sector_t blk_rq_pos(const struct request *rq)
+	功能：从request中获取当前操作的扇区号（单位扇区）
+		  这个扇区号是想要操作的磁盘上的扇区号
+	
+	int blk_rq_cur_bytes(const struct request *rq)
+	功能：获取本次操作的读写的大小（单位字节）
+	
+	
+	块设备驱动的测试：
+		1.安装驱动
+		sudo insmod mydisk.ko
+		
+		2.查看
+		ls -l mydisk 
+		brw-rw---- 1 root disk 251, 0 Dec  3 10:36 mydisk
+
+		3.分区
+		sudo fdisk -l
+		查看ubuntu当前的分区清空
+		
+		sudo df -h
+		查看ubuntu各个分区的使用百分比
+		
+		sudo fdisk /dev/mydisk
+		对/dev/mydisk进行分区
+		 d   delete a partition
+		 m   print this menu
+	     n   add a new partition
+		 p   print the partition table
+		 q   quit without saving changes
+		 w   write table to disk and exit
+		
+		4.指定磁盘的格式
+			sudo mkfs.ext2 /dev/mydisk1
+
+		5.挂载使用
+			mkdir ~/udisk
+			sudo mount /dev/mydisk1 ~/udisk
+		6.向这个目录下拷贝数据
+			sudo cp ../dc71-81 . -a
+		
+		7.取消挂载
+			sudo umount ~/udisk
+		8读取数据
+			sudo cat /dev/mydisk1 > mydisk.bin
+		9查看
+			sudo mount -o loop mydisk.bin udisk
+			sudo umount  udisk
+			
 
 
 

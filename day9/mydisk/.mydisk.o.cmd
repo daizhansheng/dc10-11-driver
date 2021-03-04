@@ -751,6 +751,7 @@ deps_/home/linux/dc10-11-driver/day9/mydisk/mydisk.o := \
     $(wildcard include/config/debug/sg.h) \
     $(wildcard include/config/need/sg/dma/length.h) \
   include/linux/elevator.h \
+  include/linux/hdreg.h \
 
 /home/linux/dc10-11-driver/day9/mydisk/mydisk.o: $(deps_/home/linux/dc10-11-driver/day9/mydisk/mydisk.o)
 
