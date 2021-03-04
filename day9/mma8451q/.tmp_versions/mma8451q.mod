@@ -1,0 +1,2 @@
+/home/linux/dc10-11-driver/day9/mma8451q/mma8451q.ko
+/home/linux/dc10-11-driver/day9/mma8451q/mma8451q.o

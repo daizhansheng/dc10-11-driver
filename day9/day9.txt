@@ -1,0 +1,124 @@
+【1】i2c设备驱动和总线驱动匹配成功之后
+	 创建的结构体
+	 struct i2c_client {
+		unsigned short flags;
+		//读写的标志位
+		unsigned short addr;
+		//从机地址
+		char name[I2C_NAME_SIZE];
+		//匹配成功时候的名字
+		struct i2c_adapter *adapter;	
+		//控制器驱动的对象
+		struct i2c_driver *driver;
+		//设备驱动的对象
+		int irq;	
+		//中断号，可以忽略
+		struct list_head detected;
+		//内核链表
+	};
+	注释：这个i2c_client结构体就是用户设备驱动对象
+		  和总线驱动对象绑定的一个结构体对象。
+		  
+		  
+【2】设备驱动如何封装和发送消息？
+	1.消息的结构体
+	struct i2c_msg {
+		__u16 addr;	
+		 //从机地址，7位 8位 10位
+		 //https://www.totalphase.com/support/articles/200349176-7-bit-8-bit-and-10-bit-I2C-Slave-Addressing
+		__u16 flags;
+		// 0 写  I2C_M_RD 读   I2C_M_TEN 10位从机地址
+		__u16 len;	
+		//数据的长度
+		__u8 *buf;	
+		//发送数据的首地址
+	};
+	
+	消息结构体的封装：有多少个起始位就有多少个消息，
+				消息长度是以字节来表示的
+	
+	2.消息发送的函数
+		int i2c_transfer(struct i2c_adapter *adap, 
+			struct i2c_msg *msgs, int num)
+		功能：发送消息
+		参数：
+			@adap:它既是总线驱动的对象
+			@msgs:消息结构体的首地址
+			@num :消息的个数
+		返回值：成功返回想发送的消息的个数，失败非
+		
+	3.写消息函数的封装
+	int i2c_write_reg(char reg,char val)
+	{
+		int ret;
+		char wbuf[] = {reg,val};
+		struct i2c_msg w_msg[1] = {
+			[0] = {
+				.addr  = client->addr,
+				.flags = 0,
+				.len   = 2,
+				.buf   = wbuf,
+			},			
+		};
+		
+		
+		ret = i2c_transfer(client->adapter, 
+			w_msg, ARRAY_SIZE(w_msg));
+		if(ret != ARRAY_SIZE(w_msg)){
+			printk("send msg error\n");
+			return -EAGAIN;
+		}
+		
+		return 0;
+	}
+	
+    4.读消息函数的封装
+	int i2c_read_reg(char reg)
+	{	
+		int ret;
+		char val;
+		char rbuf[] = {reg};
+		struct i2c_msg r_msg[] = {
+			[0] = {
+				.addr  = client->add,
+				.flags = 0,
+				.len   = 1,
+				.buf   = rbuf,
+			},
+			[1] = {
+				.addr  = client->add,
+				.flags = I2C_M_RD,
+				.len   = 1,
+				.buf   = &val,
+			},
+		};
+		
+		ret = i2c_transfer(client->adapter, 
+				r_msg, ARRAY_SIZE(r_msg));
+			if(ret != ARRAY_SIZE(r_msg)){
+				printk("receive msg error\n");
+				return -EAGAIN;
+			}
+		
+		return val;
+	}
+	
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+
+		  
+		  
+		  
+		  
+		  
