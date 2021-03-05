@@ -1,0 +1,1894 @@
+<!doctype html>
+<html style='font-size:18px !important'>
+<head>
+<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
+<title>网络协议</title><style type='text/css'>html {overflow-x: initial !important;}:root { --bg-color:#ffffff; --text-color:#333333; --select-text-bg-color:#B5D6FC; --select-text-font-color:auto; --monospace:"Lucida Console",Consolas,"Courier",monospace; }
+html { font-size: 14px; background-color: var(--bg-color); color: var(--text-color); font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0px; padding: 0px; height: auto; bottom: 0px; top: 0px; left: 0px; right: 0px; font-size: 1rem; line-height: 1.42857; overflow-x: hidden; background: inherit; tab-size: 4; }
+iframe { margin: auto; }
+a.url { word-break: break-all; }
+a:active, a:hover { outline: 0px; }
+.in-text-selection, ::selection { text-shadow: none; background: var(--select-text-bg-color); color: var(--select-text-font-color); }
+#write { margin: 0px auto; height: auto; width: inherit; word-break: normal; overflow-wrap: break-word; position: relative; white-space: normal; overflow-x: visible; padding-top: 40px; }
+#write.first-line-indent p { text-indent: 2em; }
+#write.first-line-indent li p, #write.first-line-indent p * { text-indent: 0px; }
+#write.first-line-indent li { margin-left: 2em; }
+.for-image #write { padding-left: 8px; padding-right: 8px; }
+body.typora-export { padding-left: 30px; padding-right: 30px; }
+.typora-export .footnote-line, .typora-export li, .typora-export p { white-space: pre-wrap; }
+@media screen and (max-width: 500px) {
+  body.typora-export { padding-left: 0px; padding-right: 0px; }
+  #write { padding-left: 20px; padding-right: 20px; }
+  .CodeMirror-sizer { margin-left: 0px !important; }
+  .CodeMirror-gutters { display: none !important; }
+}
+#write li > figure:last-child { margin-bottom: 0.5rem; }
+#write ol, #write ul { position: relative; }
+img { max-width: 100%; vertical-align: middle; }
+button, input, select, textarea { color: inherit; font: inherit; }
+input[type="checkbox"], input[type="radio"] { line-height: normal; padding: 0px; }
+*, ::after, ::before { box-sizing: border-box; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p, #write pre { width: inherit; }
+#write h1, #write h2, #write h3, #write h4, #write h5, #write h6, #write p { position: relative; }
+p { line-height: inherit; }
+h1, h2, h3, h4, h5, h6 { break-after: avoid-page; break-inside: avoid; orphans: 4; }
+p { orphans: 4; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.8rem; }
+h3 { font-size: 1.6rem; }
+h4 { font-size: 1.4rem; }
+h5 { font-size: 1.2rem; }
+h6 { font-size: 1rem; }
+.md-math-block, .md-rawblock, h1, h2, h3, h4, h5, h6, p { margin-top: 1rem; margin-bottom: 1rem; }
+.hidden { display: none; }
+.md-blockmeta { color: rgb(204, 204, 204); font-weight: 700; font-style: italic; }
+a { cursor: pointer; }
+sup.md-footnote { padding: 2px 4px; background-color: rgba(238, 238, 238, 0.7); color: rgb(85, 85, 85); border-radius: 4px; cursor: pointer; }
+sup.md-footnote a, sup.md-footnote a:hover { color: inherit; text-transform: inherit; text-decoration: inherit; }
+#write input[type="checkbox"] { cursor: pointer; width: inherit; height: inherit; }
+figure { overflow-x: auto; margin: 1.2em 0px; max-width: calc(100% + 16px); padding: 0px; }
+figure > table { margin: 0px !important; }
+tr { break-inside: avoid; break-after: auto; }
+thead { display: table-header-group; }
+table { border-collapse: collapse; border-spacing: 0px; width: 100%; overflow: auto; break-inside: auto; text-align: left; }
+table.md-table td { min-width: 32px; }
+.CodeMirror-gutters { border-right: 0px; background-color: inherit; }
+.CodeMirror-linenumber { user-select: none; }
+.CodeMirror { text-align: left; }
+.CodeMirror-placeholder { opacity: 0.3; }
+.CodeMirror pre { padding: 0px 4px; }
+.CodeMirror-lines { padding: 0px; }
+div.hr:focus { cursor: none; }
+#write pre { white-space: pre-wrap; }
+#write.fences-no-line-wrapping pre { white-space: pre; }
+#write pre.ty-contain-cm { white-space: normal; }
+.CodeMirror-gutters { margin-right: 4px; }
+.md-fences { font-size: 0.9rem; display: block; break-inside: avoid; text-align: left; overflow: visible; white-space: pre; background: inherit; position: relative !important; }
+.md-diagram-panel { width: 100%; margin-top: 10px; text-align: center; padding-top: 0px; padding-bottom: 8px; overflow-x: auto; }
+#write .md-fences.mock-cm { white-space: pre-wrap; }
+.md-fences.md-fences-with-lineno { padding-left: 0px; }
+#write.fences-no-line-wrapping .md-fences.mock-cm { white-space: pre; overflow-x: auto; }
+.md-fences.mock-cm.md-fences-with-lineno { padding-left: 8px; }
+.CodeMirror-line, twitterwidget { break-inside: avoid; }
+.footnotes { opacity: 0.8; font-size: 0.9rem; margin-top: 1em; margin-bottom: 1em; }
+.footnotes + .footnotes { margin-top: 0px; }
+.md-reset { margin: 0px; padding: 0px; border: 0px; outline: 0px; vertical-align: top; background: 0px 0px; text-decoration: none; text-shadow: none; float: none; position: static; width: auto; height: auto; white-space: nowrap; cursor: inherit; -webkit-tap-highlight-color: transparent; line-height: normal; font-weight: 400; text-align: left; box-sizing: content-box; direction: ltr; }
+li div { padding-top: 0px; }
+blockquote { margin: 1rem 0px; }
+li .mathjax-block, li p { margin: 0.5rem 0px; }
+li { margin: 0px; position: relative; }
+blockquote > :last-child { margin-bottom: 0px; }
+blockquote > :first-child, li > :first-child { margin-top: 0px; }
+.footnotes-area { color: rgb(136, 136, 136); margin-top: 0.714rem; padding-bottom: 0.143rem; white-space: normal; }
+#write .footnote-line { white-space: pre-wrap; }
+@media print {
+  body, html { border: 1px solid transparent; height: 99%; break-after: avoid; break-before: avoid; font-variant-ligatures: no-common-ligatures; }
+  #write { margin-top: 0px; padding-top: 0px; border-color: transparent !important; }
+  .typora-export * { -webkit-print-color-adjust: exact; }
+  html.blink-to-pdf { font-size: 13px; }
+  .typora-export #write { padding-left: 32px; padding-right: 32px; padding-bottom: 0px; break-after: avoid; }
+  .typora-export #write::after { height: 0px; }
+}
+.footnote-line { margin-top: 0.714em; font-size: 0.7em; }
+a img, img a { cursor: pointer; }
+pre.md-meta-block { font-size: 0.8rem; min-height: 0.8rem; white-space: pre-wrap; background: rgb(204, 204, 204); display: block; overflow-x: hidden; }
+p > .md-image:only-child:not(.md-img-error) img, p > img:only-child { display: block; margin: auto; }
+#write.first-line-indent p > .md-image:only-child:not(.md-img-error) img { left: -2em; position: relative; }
+p > .md-image:only-child { display: inline-block; width: 100%; }
+#write .MathJax_Display { margin: 0.8em 0px 0px; }
+.md-math-block { width: 100%; }
+.md-math-block:not(:empty)::after { display: none; }
+[contenteditable="true"]:active, [contenteditable="true"]:focus, [contenteditable="false"]:active, [contenteditable="false"]:focus { outline: 0px; box-shadow: none; }
+.md-task-list-item { position: relative; list-style-type: none; }
+.task-list-item.md-task-list-item { padding-left: 0px; }
+.md-task-list-item > input { position: absolute; top: 0px; left: 0px; margin-left: -1.2em; margin-top: calc(1em - 10px); border: none; }
+.math { font-size: 1rem; }
+.md-toc { min-height: 3.58rem; position: relative; font-size: 0.9rem; border-radius: 10px; }
+.md-toc-content { position: relative; margin-left: 0px; }
+.md-toc-content::after, .md-toc::after { display: none; }
+.md-toc-item { display: block; color: rgb(65, 131, 196); }
+.md-toc-item a { text-decoration: none; }
+.md-toc-inner:hover { text-decoration: underline; }
+.md-toc-inner { display: inline-block; cursor: pointer; }
+.md-toc-h1 .md-toc-inner { margin-left: 0px; font-weight: 700; }
+.md-toc-h2 .md-toc-inner { margin-left: 2em; }
+.md-toc-h3 .md-toc-inner { margin-left: 4em; }
+.md-toc-h4 .md-toc-inner { margin-left: 6em; }
+.md-toc-h5 .md-toc-inner { margin-left: 8em; }
+.md-toc-h6 .md-toc-inner { margin-left: 10em; }
+@media screen and (max-width: 48em) {
+  .md-toc-h3 .md-toc-inner { margin-left: 3.5em; }
+  .md-toc-h4 .md-toc-inner { margin-left: 5em; }
+  .md-toc-h5 .md-toc-inner { margin-left: 6.5em; }
+  .md-toc-h6 .md-toc-inner { margin-left: 8em; }
+}
+a.md-toc-inner { font-size: inherit; font-style: inherit; font-weight: inherit; line-height: inherit; }
+.footnote-line a:not(.reversefootnote) { color: inherit; }
+.md-attr { display: none; }
+.md-fn-count::after { content: "."; }
+code, pre, samp, tt { font-family: var(--monospace); }
+kbd { margin: 0px 0.1em; padding: 0.1em 0.6em; font-size: 0.8em; color: rgb(36, 39, 41); background: rgb(255, 255, 255); border: 1px solid rgb(173, 179, 185); border-radius: 3px; box-shadow: rgba(12, 13, 14, 0.2) 0px 1px 0px, rgb(255, 255, 255) 0px 0px 0px 2px inset; white-space: nowrap; vertical-align: middle; }
+.md-comment { color: rgb(162, 127, 3); opacity: 0.8; font-family: var(--monospace); }
+code { text-align: left; vertical-align: initial; }
+a.md-print-anchor { white-space: pre !important; border-width: initial !important; border-style: none !important; border-color: initial !important; display: inline-block !important; position: absolute !important; width: 1px !important; right: 0px !important; outline: 0px !important; background: 0px 0px !important; text-decoration: initial !important; text-shadow: initial !important; }
+.md-inline-math .MathJax_SVG .noError { display: none !important; }
+.html-for-mac .inline-math-svg .MathJax_SVG { vertical-align: 0.2px; }
+.md-math-block .MathJax_SVG_Display { text-align: center; margin: 0px; position: relative; text-indent: 0px; max-width: none; max-height: none; min-height: 0px; min-width: 100%; width: auto; overflow-y: hidden; display: block !important; }
+.MathJax_SVG_Display, .md-inline-math .MathJax_SVG_Display { width: auto; margin: inherit; display: inline-block !important; }
+.MathJax_SVG .MJX-monospace { font-family: var(--monospace); }
+.MathJax_SVG .MJX-sans-serif { font-family: sans-serif; }
+.MathJax_SVG { display: inline; font-style: normal; font-weight: 400; line-height: normal; zoom: 90%; text-indent: 0px; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; overflow-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0px; min-height: 0px; border: 0px; padding: 0px; margin: 0px; }
+.MathJax_SVG * { transition: none 0s ease 0s; }
+.MathJax_SVG_Display svg { vertical-align: middle !important; margin-bottom: 0px !important; margin-top: 0px !important; }
+.os-windows.monocolor-emoji .md-emoji { font-family: "Segoe UI Symbol", sans-serif; }
+.md-diagram-panel > svg { max-width: 100%; }
+[lang="flow"] svg, [lang="mermaid"] svg { max-width: 100%; height: auto; }
+[lang="mermaid"] .node text { font-size: 1rem; }
+table tr th { border-bottom: 0px; }
+video { max-width: 100%; display: block; margin: 0px auto; }
+iframe { max-width: 100%; width: 100%; border: none; }
+.highlight td, .highlight tr { border: 0px; }
+svg[id^="mermaidChart"] { line-height: 1em; }
+mark { background: rgb(255, 255, 0); color: rgb(0, 0, 0); }
+.md-html-inline .md-plain, .md-html-inline strong, mark .md-inline-math, mark strong { color: inherit; }
+mark .md-meta { color: rgb(0, 0, 0); opacity: 0.3 !important; }
+
+
+.CodeMirror { height: auto; }
+.CodeMirror.cm-s-inner { background: inherit; }
+.CodeMirror-scroll { overflow: auto hidden; z-index: 3; }
+.CodeMirror-gutter-filler, .CodeMirror-scrollbar-filler { background-color: rgb(255, 255, 255); }
+.CodeMirror-gutters { border-right: 1px solid rgb(221, 221, 221); background: inherit; white-space: nowrap; }
+.CodeMirror-linenumber { padding: 0px 3px 0px 5px; text-align: right; color: rgb(153, 153, 153); }
+.cm-s-inner .cm-keyword { color: rgb(119, 0, 136); }
+.cm-s-inner .cm-atom, .cm-s-inner.cm-atom { color: rgb(34, 17, 153); }
+.cm-s-inner .cm-number { color: rgb(17, 102, 68); }
+.cm-s-inner .cm-def { color: rgb(0, 0, 255); }
+.cm-s-inner .cm-variable { color: rgb(0, 0, 0); }
+.cm-s-inner .cm-variable-2 { color: rgb(0, 85, 170); }
+.cm-s-inner .cm-variable-3 { color: rgb(0, 136, 85); }
+.cm-s-inner .cm-string { color: rgb(170, 17, 17); }
+.cm-s-inner .cm-property { color: rgb(0, 0, 0); }
+.cm-s-inner .cm-operator { color: rgb(152, 26, 26); }
+.cm-s-inner .cm-comment, .cm-s-inner.cm-comment { color: rgb(170, 85, 0); }
+.cm-s-inner .cm-string-2 { color: rgb(255, 85, 0); }
+.cm-s-inner .cm-meta { color: rgb(85, 85, 85); }
+.cm-s-inner .cm-qualifier { color: rgb(85, 85, 85); }
+.cm-s-inner .cm-builtin { color: rgb(51, 0, 170); }
+.cm-s-inner .cm-bracket { color: rgb(153, 153, 119); }
+.cm-s-inner .cm-tag { color: rgb(17, 119, 0); }
+.cm-s-inner .cm-attribute { color: rgb(0, 0, 204); }
+.cm-s-inner .cm-header, .cm-s-inner.cm-header { color: rgb(0, 0, 255); }
+.cm-s-inner .cm-quote, .cm-s-inner.cm-quote { color: rgb(0, 153, 0); }
+.cm-s-inner .cm-hr, .cm-s-inner.cm-hr { color: rgb(153, 153, 153); }
+.cm-s-inner .cm-link, .cm-s-inner.cm-link { color: rgb(0, 0, 204); }
+.cm-negative { color: rgb(221, 68, 68); }
+.cm-positive { color: rgb(34, 153, 34); }
+.cm-header, .cm-strong { font-weight: 700; }
+.cm-del { text-decoration: line-through; }
+.cm-em { font-style: italic; }
+.cm-link { text-decoration: underline; }
+.cm-error { color: red; }
+.cm-invalidchar { color: red; }
+.cm-constant { color: rgb(38, 139, 210); }
+.cm-defined { color: rgb(181, 137, 0); }
+div.CodeMirror span.CodeMirror-matchingbracket { color: rgb(0, 255, 0); }
+div.CodeMirror span.CodeMirror-nonmatchingbracket { color: rgb(255, 34, 34); }
+.cm-s-inner .CodeMirror-activeline-background { background: inherit; }
+.CodeMirror { position: relative; overflow: hidden; }
+.CodeMirror-scroll { height: 100%; outline: 0px; position: relative; box-sizing: content-box; background: inherit; }
+.CodeMirror-sizer { position: relative; }
+.CodeMirror-gutter-filler, .CodeMirror-hscrollbar, .CodeMirror-scrollbar-filler, .CodeMirror-vscrollbar { position: absolute; z-index: 6; display: none; }
+.CodeMirror-vscrollbar { right: 0px; top: 0px; overflow: hidden; }
+.CodeMirror-hscrollbar { bottom: 0px; left: 0px; overflow: hidden; }
+.CodeMirror-scrollbar-filler { right: 0px; bottom: 0px; }
+.CodeMirror-gutter-filler { left: 0px; bottom: 0px; }
+.CodeMirror-gutters { position: absolute; left: 0px; top: 0px; padding-bottom: 30px; z-index: 3; }
+.CodeMirror-gutter { white-space: normal; height: 100%; box-sizing: content-box; padding-bottom: 30px; margin-bottom: -32px; display: inline-block; }
+.CodeMirror-gutter-wrapper { position: absolute; z-index: 4; background: 0px 0px !important; border: none !important; }
+.CodeMirror-gutter-background { position: absolute; top: 0px; bottom: 0px; z-index: 4; }
+.CodeMirror-gutter-elt { position: absolute; cursor: default; z-index: 4; }
+.CodeMirror-lines { cursor: text; }
+.CodeMirror pre { border-radius: 0px; border-width: 0px; background: 0px 0px; font-family: inherit; font-size: inherit; margin: 0px; white-space: pre; overflow-wrap: normal; color: inherit; z-index: 2; position: relative; overflow: visible; }
+.CodeMirror-wrap pre { overflow-wrap: break-word; white-space: pre-wrap; word-break: normal; }
+.CodeMirror-code pre { border-right: 30px solid transparent; width: fit-content; }
+.CodeMirror-wrap .CodeMirror-code pre { border-right: none; width: auto; }
+.CodeMirror-linebackground { position: absolute; left: 0px; right: 0px; top: 0px; bottom: 0px; z-index: 0; }
+.CodeMirror-linewidget { position: relative; z-index: 2; overflow: auto; }
+.CodeMirror-wrap .CodeMirror-scroll { overflow-x: hidden; }
+.CodeMirror-measure { position: absolute; width: 100%; height: 0px; overflow: hidden; visibility: hidden; }
+.CodeMirror-measure pre { position: static; }
+.CodeMirror div.CodeMirror-cursor { position: absolute; visibility: hidden; border-right: none; width: 0px; }
+.CodeMirror div.CodeMirror-cursor { visibility: hidden; }
+.CodeMirror-focused div.CodeMirror-cursor { visibility: inherit; }
+.cm-searching { background: rgba(255, 255, 0, 0.4); }
+@media print {
+  .CodeMirror div.CodeMirror-cursor { visibility: hidden; }
+}
+
+
+:root {
+    /* dark color for background*/
+    /* default color */
+    --bg-color1: rgb(40, 44, 52);
+    /* for most panel, context, header, etc */
+    --bg-color2: rgb(33, 37, 43);
+    /* for toc and table edit panel */
+    --bg-color3: rgba(16, 17, 20, 0.5);
+    /* for tips */
+    --bg-color4: black;
+    /* for blockquote, codeblock, input, etc */
+    --bg-color5: rgb(29, 31, 35);
+    /* light color for text and icon*/
+    /* default color */
+    --text-color1: rgb(170, 178, 180);
+    /* for text on panel */
+    --text-color2: rgb(220, 220, 220);
+    /* for checkbox and radio */
+    --text-color3: hsl(192, 6%, 40%);
+    /* for tips */
+    --text-color4: white;
+    /* for focus mode */
+    --text-color5: rgba(170, 178, 180, 0.5);
+    /* link color */
+    --link-color: rgb(197, 202, 210);
+    /* table color */
+    --table-border-color: rgb(100, 104, 116);
+    --table-thead-color: rgb(31, 35, 40);
+    --table-bg-color: rgb(40, 45, 52);
+    --table-bg-darker-color: rgb(35, 40, 46);
+    /* hover color */
+    /* default hover background color */
+    --hover-bg-color1: rgb(62, 66, 73);
+    /* for input item */
+    --hover-bg-color2: hsl(220, 9%, 14%);
+    /* for button on toc and table edit panel */
+    --hover-bg-color3: rgba(62, 66, 73, 0.8);
+    /* default hover text color */
+    --hover-text-color: white;
+    /* active color */
+    --active-color: var(--hover-bg-color1);
+    /* input color */
+    --input-color: rgb(29, 31, 35);
+    /* menu divider color */
+    --menu-divider-color: rgb(95, 97, 101);
+    /* scrollbar color */
+    --scrollbar-thumb-color: var(--menu-divider-color);
+    --scrollbar-track-color: rgba(95, 97, 101, 0.3);
+    /* theme select color */
+    --theme-select-color: rgba(255, 255, 255, 0.5);
+    --button-color: rgb(62, 66, 73);
+    --select-color: rgb(33, 37, 43);
+    /* focus color */
+    --focus-color: rgba(100, 100, 100, .8);
+    --focus-ring-color: var(--focus-color);
+    /* codeblock color */
+    --code-red-color: rgb(221, 110, 115);
+    --code-yellow-color: rgb(218, 192, 123);
+    --code-cyan-color: rgb(86, 182, 194);
+    --code-blue-color: rgb(94, 174, 237);
+    --code-purple-color: rgb(195, 115, 215);
+    --code-orange-color: rgb(221, 153, 103);
+    --code-grey-color: rgb(127, 132, 142);
+    --code-green-color: rgb(152, 195, 123);
+    --code-select-bg-color: rgb(64, 72, 89);
+    --code-cursor-color: rgb(82, 139, 255);
+    /* implicit selecttion text bg color */
+    --select-text-bg-color: rgb(150, 156, 170);
+    /* implicit button color */
+    --primary-color: var(--button-color);
+    --primary-btn-border-color: transparent;
+    --primary-btn-text-color: var(--text-color2);
+    /* implicit sidebar color */
+    --side-bar-bg-color: var(--bg-color2);
+    --control-text-color: var(--text-color2);
+    /* implicit text color */
+    --text-color: var(--text-color1);
+    /* implicit background color for setting menu */
+    --bg-color: var(--bg-color1);
+    /* implicit hover color */
+    --item-hover-bg-color: var(--hover-bg-color1);
+    --item-hover-text-color: var(--hover-text-color);
+    /* implicit active color */
+    --active-file-bg-color: var(--hover-bg-color);
+    /* implicit mathjax edit panel background color */
+    --rawblock-edit-panel-bd: var(--bg-color5);
+    /* implicit focus mode color */
+    --blur-text-color: var(--text-color5);
+    /* implicit search result select color */
+    --search-select-bg-color: var(--select-text-bg-color);
+    --search-select-bg-color: rgb(56, 71, 95);
+
+    --control-text-hover-color: var(--hover-text-color);
+    /* implicit active file color in sidebar file menu treeview */
+    --active-file-text-color: var(--hover-text-color);
+    --active-file-border-color: var(--hover-text-color);
+
+    --node-border: var(--menu-divider-color);
+    --node-fill: var(--bg-color2);
+}
+
+/* font */
+/* basic style */
+html {
+    font-size: 16px;
+}
+
+body {
+    font-family: "Open Sans", "Clear Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: var(--text-color1);
+    background: var(--bg-color1);
+    line-height: 1.6;
+}
+
+/* text selection background color */
+.in-text-selection {
+    background-color: rgb(64, 72, 89);
+}
+
+/* link */
+#write a:not([role=menuitem]) {
+    color: var(--link-color) !important;
+}
+
+#write a:not([role=menuitem]):hover {
+    color: var(--hover-text-color) !important;
+}
+
+/* h1-h6 */
+#write h1,
+#write h2,
+#write h3,
+#write h4,
+#write h5,
+#write h6 {
+    margin-top: 0.5em;
+    margin-bottom: 0em;
+    line-height: 1em;
+}
+
+#write h1 {
+    font-size: 2.5em;
+    padding-bottom: .5em;
+    border-bottom: 5px double var(--text-color1);
+}
+
+#write h1:before {
+    content: '\00A7  ';
+}
+
+#write h2 {
+    font-size: 2em;
+    padding-bottom: .5em;
+    border-bottom: 3px double var(--text-color1);
+}
+
+#write h2:before {
+    content: '\00A7  '
+}
+
+#write h3 {
+    font-size: 1.75em;
+    padding-bottom: .5em;
+    border-bottom: 1px solid var(--text-color1);
+}
+
+#write h4 {
+    font-size: 1.55em;
+}
+
+#write h5 {
+    font-size: 1.35em;
+}
+
+#write h6 {
+    font-size: 1.2em;
+}
+
+/* horizontal divider */
+hr {
+    height: 2px;
+    background-color: var(--text-color1);
+    border: 0px;
+}
+
+/* list */
+ul,
+ol {
+    padding-left: 30px;
+}
+
+/* blockquote */
+blockquote {
+    border-left: 4px solid var(--text-color1);
+    padding: 4px 15px;
+    color: var(--text-color1);
+    background-color: var(--bg-color5);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+blockquote blockquote {
+    padding-right: 0em;
+}
+
+/* table */
+.md-table-fig,
+.md-table-fig:active {
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+.md-table thead tr {
+    background-color: var(--table-thead-color);
+}
+
+.md-table tr th {
+    font-weight: bold;
+    border-left: 1px solid var(--table-border-color);
+    border-right: 1px solid var(--table-border-color);
+    text-align: left;
+    margin: 0;
+    padding: 6px 13px;
+}
+
+.md-table tbody tr {
+    border-top: 1px solid var(--table-border-color);
+    margin: 0;
+    padding: 0;
+}
+
+.md-table tbody tr:nth-child(2n) {
+    background-color: var(--table-bg-darker-color);
+}
+
+.md-table tbody tr:nth-child(2n+1) {
+    background-color: var(--table-bg-color);
+}
+
+.md-table tr td {
+    border-left: 1px solid var(--table-border-color);
+    border-right: 1px solid var(--table-border-color);
+    text-align: left;
+    margin: 0;
+    padding: 6px 13px;
+}
+
+.md-table tr th:first-child,
+.md-table tr td:first-child {
+    border-left-width: 0px;
+}
+
+.md-table tr th:last-child,
+.md-table tr td:last-child {
+    border-right-width: 0px;
+}
+
+/* table edit panel */
+.ty-table-edit {
+    background-color: var(--bg-color3);
+    border: 0px;
+    border-radius: 6px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 6px;
+    padding-right: 6px;
+    margin-top: -29px !important;
+}
+
+/* button on table edit panel */
+.ty-table-edit button {
+    background-color: transparent;
+    color: var(--text-color2);
+    border: 0px;
+    margin-left: 0px !important;
+}
+
+/* button hover on table edit panel */
+.ty-table-edit button:hover {
+    background-color: var(--hover-bg-color3);
+    color: var(--hover-text-color);
+}
+
+/* adjusting table panel */
+.popover {
+    background-color: var(--bg-color2);
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, .5);
+}
+
+/* arrow of adjusting table panel */
+.popover.bottom>.arrow:after {
+    border-bottom-color: var(--bg-color2);
+}
+
+/* divider in adjust table panel */
+.md-grid-board-wrap .popover-title {
+    border-top-color: var(--menu-divider-color);
+}
+
+/* grid size */
+.md-grid-board a {
+    width: 15px;
+    height: 15px;
+}
+
+/* existing thread grid */
+.md-grid-board tr[row='1'] .md-grid-ext {
+    background-color: rgb(60, 60, 60);
+}
+
+/* not existing thread grid */
+.md-grid-board tr[row='1'] {
+    background-color: rgb(220, 220, 220);
+}
+
+/* existing grid */
+.md-grid-board .md-grid-ext {
+    background-color: rgb(120, 120, 120);
+}
+
+/* selected thread grid */
+.md-grid-board tr[row='1'] a.md-active,
+.md-grid-board tr[row='1'] a:hover {
+    background-color: rgb(60, 60, 60);
+}
+
+/* selected grid */
+.md-grid-board a.md-active,
+.md-grid-board a:hover {
+    border-color: var(--menu-divider-color);
+    background-color: rgb(120, 120, 120);
+}
+
+/* task */
+.md-task-list-item>input {
+    margin-left: -1.3em;
+}
+
+/* footnote */
+sup.md-footnote {
+    color: var(--text-color1);
+    background-color: var(--bg-color2);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+/* mathjax */
+/* .mathjax-block>.code-tooltip {
+    bottom: .375rem;
+}
+.md-mathjax-midline {
+    background: #fafafa;
+} */
+.md-inline-math script {
+    color: var(--text-color1);
+}
+
+.md-rawblock>.md-rawblock-container {
+    transition: 0.5s;
+}
+
+.md-rawblock>.md-rawblock-tooltip {
+    transition: 0.5s;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.md-rawblock:hover>.md-rawblock-tooltip {
+    transition: 0.5s;
+    visibility: visible;
+    opacity: 1;
+    animation: none;
+}
+
+/* meta information of image */
+.md-image>.md-meta {
+    border: 0px;
+    padding: 2px 0px 0px 4px;
+    font-size: 0.9em;
+    color: var(--text-color1);
+}
+
+/* input */
+input {
+    background-color: var(--input-color) !important;
+    border: 0px !important;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+/* input hover */
+/* input:hover {
+    background-color: var(--hover-bg-color2) !important;
+} */
+/* checkbox */
+input[type=checkbox]:before {
+    content: "";
+    display: inline-block;
+    width: 1.1rem;
+    height: 1.1rem;
+    vertical-align: middle;
+    text-align: center;
+    border: 0px;
+    border-radius: 3px;
+    background-color: var(--input-color);
+    margin-top: -0.5rem;
+    margin-left: -0.1rem;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+/* checkbox hover */
+input[type=checkbox]:not([disabled]):not(:checked):hover:before {
+    content: '\2713';
+    font-size: 0.9rem;
+    line-height: 1.2rem;
+    color: var(--text-color3);
+}
+
+/* checkbox checked*/
+input[type=checkbox]:checked:before {
+    content: '\2713';
+    font-size: 0.9rem;
+    line-height: 1.2rem;
+    color: var(--text-color2);
+}
+
+/* checkbox checked hover*/
+input[type=checkbox]:checked:hover:before {
+    content: '\2713';
+    font-size: 0.9rem;
+    line-height: 1.2rem;
+    color: var(--hover-text-color);
+}
+
+/* radio */
+input[type=radio]:before {
+    content: "";
+    display: inline-block;
+    width: 1.1rem;
+    height: 1.1rem;
+    vertical-align: middle;
+    text-align: center;
+    border: 0px;
+    border-radius: 0.55rem;
+    background-color: var(--input-color);
+    margin-top: -0.4rem;
+    margin-left: -0.1rem;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+/* radio hover */
+input[type=radio]:not([disabled]):not(:checked):hover:before {
+    content: '\25CF';
+    font-size: 1rem;
+    line-height: 1rem;
+    color: var(--text-color3);
+}
+
+/* radio checked */
+input[type=radio]:checked:before {
+    content: '\25CF';
+    font-size: 1rem;
+    line-height: 1rem;
+    color: var(--text-color2);
+}
+
+/* radio checked hover*/
+input[type=radio]:checked:before {
+    content: '\25CF';
+    font-size: 1rem;
+    line-height: 1rem;
+    color: var(--hover-text-color);
+}
+
+/* default focus style */
+:focus {
+    outline-color: var(--focus-color);
+}
+
+/* exit source view button */
+.typora-sourceview-on #toggle-sourceview-btn {
+    background-color: var(--bg-color2)
+}
+
+.typora-sourceview-on #toggle-sourceview-btn:hover {
+    background-color: var(--hover-bg-color1)
+}
+
+/* shadow for image item*/
+.md-image img {
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+/* toc */
+.md-toc {
+    background-color: var(--bg-color3);
+    border-radius: 6px;
+    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    border: 0px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+/* toc content */
+.md-toc-content {
+    padding-top: 5px;
+    padding-bottom: 8px;
+    margin-top: 15px;
+    margin-bottom: 0px;
+}
+
+/* remove outline when toc is selected */
+.md-toc:focus .md-toc-content {
+    border: 0px;
+    margin: 0px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+/* toc item */
+.md-toc-item {
+    margin: 2px;
+}
+
+/* toc edit panel */
+#write div.md-toc-tooltip {
+    border: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: var(--bg-color3);
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    opacity: 0;
+    visibility: hidden;
+    display: block !important;
+    transition: .3s;
+}
+
+#write .md-toc:focus div.md-toc-tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+#write .md-toc:focus {
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+/* toc delete button */
+.md-delete-toc {
+    background-color: transparent;
+}
+
+/* html block */
+.md-htmlblock:hover .md-htmlblock-container {
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    border-top-right-radius: 0px;
+}
+
+/* search panel */
+#md-searchpanel {
+    background-color: var(--bg-color2);
+    color: var(--text-color2);
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, .5);
+}
+
+/* ignore case button and find whole word button */
+.searchpanel-search-option-btn {
+    border: 0px;
+}
+
+/* button on search panel */
+#md-searchpanel .btn:hover {
+    color: var(--hover-text-color);
+    background-color: var(--hover-bg-color1) !important;
+}
+
+/* remove shadow around input in search panel*/
+#md-searchpanel input {
+    box-shadow: none;
+}
+
+/* search option button hover */
+.searchpanel-search-option-btn:not(.active):hover {
+    color: var(--hover-text-color);
+    background-color: var(--hover-bg-color1);
+}
+
+/* close button in search panel */
+#md-searchpanel .input-group-addon.close-btn {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+/* replaceall button */
+.ty-replace-panel-row #search-panel-replaceall-btn {
+    padding-left: 8px;
+    padding-right: 6px !important;
+}
+
+/* replace button */
+.ty-replace-panel-row #search-panel-replace-btn {
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+/* sidebar */
+.sidebar-menu {
+    color: var(--text-color2);
+}
+
+/* sidebar shadow */
+.typora-node #typora-sidebar {
+    box-shadow: 3px 0px 10px rgba(0, 0, 0, .5);
+}
+
+/* divider between file item and search */
+.ty-sidebar-search-panel {
+    border-color: var(--menu-divider-color);
+}
+
+/* file item in sidebar */
+#file-library .file-list-item {
+    border-bottom: 0px;
+    opacity: 1;
+    border-left: 4px solid;
+    border-color: var(--bg-color2);
+}
+
+/* file item hover */
+#file-library .file-list-item:hover {
+    background-color: var(--hover-bg-color1);
+    color: var(--hover-text-color);
+    border-color: var(--hover-bg-color1);
+}
+
+/* file item active */
+#file-library .file-list-item.active {
+    background-color: var(--hover-bg-color1);
+    color: var(--hover-text-color);
+    border-color: var(--hover-text-color);
+}
+
+/* suffix of file item*/
+.file-list-item-file-ext-part {
+    opacity: 0.8;
+}
+
+/* sidebar file menu */
+#sidebar-files-menu {
+    border: 0px;
+    box-shadow: -2px -2px 10px rgba(0, 0, 0, .5);
+}
+
+/* sidebar file menu item */
+.dropdown-menu>li>a {
+    color: var(--text-color2);
+}
+
+.dropdown-menu>li>a:hover {
+    color: var(--hover-text-color);
+}
+
+/* sidebar file menu close button */
+#close-sidebar-menu-btn:hover {
+    color: var(--hover-text-color);
+}
+
+/* sidebar file nemu divider */
+#sidebar-files-menu>.show+.menuitem-group-label.show {
+    border-color: var(--menu-divider-color);
+}
+
+/* sidebar footer */
+.sidebar-footer {
+    border: 0px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .5);
+    transition: 0.3s;
+    display: flex !important;
+}
+
+.pin-outline #typora-sidebar:hover .sidebar-footer:not(.show-sidebar-footer-context) {
+    animation: none;
+}
+
+/* remove outline when file item in treeview is selected*/
+.file-library-node:not(.file-node-root):focus>.file-node-content {
+    outline: none;
+}
+
+/* sort button on sidebar file menu */
+.ty-side-sort-btn.active,
+.ty-side-sort-btn:hover {
+    color: var(--hover-text-color);
+}
+
+/* setting */
+/* header in setting */
+.window-header {
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, .5) !important;
+}
+
+/* sidebar in setting */
+.sidebar {
+    background-color: var(--bg-color2) !important;
+    box-shadow: 3px 0px 10px rgba(0, 0, 0, .5);
+}
+
+.list-group-content {
+    margin-left: 10px !important;
+}
+
+/* sidebar button in setting menu */
+.nav-group-item {
+    color: var(--text-color2) !important;
+    border-top-left-radius: 6px !important;
+    border-bottom-left-radius: 6px !important;
+    border-top-right-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+}
+
+/* sidebar button hover in setting menu */
+.nav-group-item:hover,
+.nav-group-item:active,
+.nav-group-item.active {
+    background-color: var(--hover-bg-color1) !important;
+    color: var(--hover-text-color) !important;
+}
+
+/* remove up and down button from number type input*/
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+}
+
+/* the indent example in setting.editor */
+div.pane>div:nth-child(4)>div:nth-child(2) .label-input-group td:last-child div {
+    border: 0px !important;
+    border-radius: 6px;
+    background-color: var(--bg-color5);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+    margin: 10px !important;
+}
+
+/* button in setting menu */
+.ty-preferences button.btn-default {
+    border: 0px;
+    background-color: var(--bg-color5);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+    border-radius: 6px;
+}
+
+/* button hover in setting menu */
+.ty-preferences .btn-default:not([disabled]):hover {
+    background-color: var(--hover-bg-color1) !important;
+}
+
+/* return button in setting menu */
+.window-header button:hover {
+    color: var(--text-color2) !important;
+}
+
+/* search input in setting menu */
+.search-input {
+    border-top-left-radius: 6px !important;
+    border-bottom-left-radius: 6px !important;
+    border-top-right-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    margin-left: 10px !important;
+}
+
+.search-input:focus {
+    border: none !important;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2) !important;
+}
+
+/* select item (mostly in setting menu) */
+select {
+    border: 0px;
+    border-radius: 6px;
+    background-color: var(--input-color) !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+/* enabled select item hover */
+select:not([disabled]):hover {
+    color: var(--text-color2);
+    opacity: 1;
+}
+
+/* disabled select item hover */
+select[disabled]:hover {
+    opacity: .5;
+}
+
+/* mega menu */
+.megamenu-content,
+.megamenu-opened header {
+    background: var(--bg-color1);
+}
+
+.megamenu-content {
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.megamenu-opened .megamenu-content {
+    visibility: visible;
+    opacity: 1;
+    animation: none;
+}
+
+/* mega menu sidebar*/
+.megamenu-menu {
+    background-color: var(--bg-color2);
+    box-shadow: 3px 0px 10px rgba(0, 0, 0, .5);
+}
+
+/* return button in mega menu */
+#megamenu-menu-sidebar .menu-style-btn {
+    border: 0px;
+}
+
+/* remove divider in mega menu */
+.megamenu-menu-header {
+    border-color: var(--menu-divider-color);
+}
+
+/* return button color in mega menu */
+.megamenu-menu-header #megamenu-menu-header-title {
+    color: var(--text-color2);
+}
+
+/* return button hover in mega menu */
+.megamenu-menu-header:hover {
+    background-color: var(--hover-bg-color1);
+}
+
+/* return button hover in mega menu */
+.megamenu-menu-header:hover #megamenu-menu-header-title {
+    color: var(--hover-text-color);
+}
+
+/* long button in mega menu */
+.long-btn {
+    border: 0px;
+    background-color: var(--bg-color5);
+    color: var(--text-color1);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+/* recent file in mega menu */
+#recent-file-panel {
+    padding: 10px
+}
+
+#recent-document-table {
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+#recent-file-panel-action-btn {
+    background: var(--bg-color5);
+    border: 0px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+#recent-file-panel thead tr {
+    background-color: var(--table-thead-color);
+}
+
+#recent-file-panel tbody tr:nth-child(2n) {
+    background-color: var(--table-bg-darker-color);
+}
+
+#recent-file-panel tbody tr:nth-child(2n+1) {
+    background-color: var(--table-bg-color);
+}
+
+#recent-file-panel-action-btn:hover {
+    background-color: var(--hover-bg-color1);
+    color: var(--text-color2);
+}
+
+/* theme preview */
+.theme-preview-div {
+    box-shadow: 10px 0px 10px rgba(0, 0, 0, .8);
+}
+
+/* theme preview hover */
+.theme-preview-div:hover {
+    border-color: var(--theme-select-color);
+}
+
+/* context menu and spell check panel */
+.dropdown-menu:not(.megamenu-menu-list) {
+    background-color: var(--bg-color2);
+    color: var(--text-color2);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .5);
+}
+
+/* divider in context menu and spell check panel */
+.dropdown-menu .divider {
+    border-color: var(--menu-divider-color);
+}
+
+/* remove divider outline */
+.dropdown-menu {
+    border: 0px;
+}
+
+/* footer */
+footer.ty-footer {
+    border-top: 0px !important;
+    background-color: var(--bg-color2) !important;
+    /*     color: var(--text-color2); */
+    box-shadow: 0px -2px 10px rgba(0, 0, 0, .5);
+}
+
+/* footer item */
+.footer-item,
+#outline-btn,
+#footer-word-count {
+    color: var(--text-color2);
+    opacity: 1;
+}
+
+/* footer item hover */
+.footer-item:hover,
+#outline-btn:hover {
+    background-color: var(--hover-bg-color1);
+    color: var(--hover-text-color);
+}
+
+/* button on some panel */
+.btn {
+    border: 0px;
+    outline-width: 0px !important;
+}
+
+.btn:hover {
+    background-color: var(--hover-bg-color1);
+    color: var(--hover-text-color);
+}
+
+/* traffic button hover */
+#top-titlebar .toolbar-icon.btn:hover {
+    color: var(--text-color2);
+    background-color: var(--hover-bg-color1);
+}
+
+/* traffic button hover */
+#top-titlebar #w-close:hover {
+    background-color: #e81123 !important;
+}
+
+/* adjust maxmize restore button height */
+.typora-maxmized #w-restore {
+    height: 24px
+}
+
+/* left upper button hover */
+.ty-menu-btn-area:hover .ty-menu-btn-area-sub {
+    color: var(--text-color2) !important;
+}
+
+/* scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    padding-right: 10px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+/* scrollbar track */
+::-webkit-scrollbar-track:hover {
+    background-color: var(--scrollbar-track-color) !important;
+    border-radius: 4px;
+}
+
+/* scrollbar thumb */
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-thumb:active {
+    background-color: var(--scrollbar-thumb-color) !important;
+    border-radius: 4px;
+}
+
+/* tip when hover on a button */
+#ty-tooltip {
+    background-color: var(--bg-color4);
+    color: var(--text-color4);
+}
+
+/* item container hover in context menu */
+.menu-item-container:hover {
+    background-color: var(--bg-color2);
+}
+
+/* item in context menu */
+.menu-item-container .menu-style-btn {
+    border-color: var(--menu-divider-color);
+}
+
+/* mathjax edit panel*/
+.md-rawblock-before {
+    border-top-left-radius: 6px;
+}
+
+.md-rawblock-after {
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+/* mathjax focus */
+.MathJax_SVG:focus {
+    outline: none;
+    background-color: transparent;
+}
+
+/* notification panel */
+#md-notification {
+    background-color: var(--bg-color2) !important;
+    color: var(--text-color2);
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, .5);
+}
+
+#ty-surpress-mode-warning-close-btn {
+    float: unset !important;
+    margin: 0px !important;
+}
+
+.unibody-window #md-notification p {
+    bottom: -4px !important;
+}
+
+/* inline codeblock */
+code {
+    font-size: 0.9em;
+    background-color: var(--bg-color5);
+    border-radius: 6px;
+    padding: 4px 4px 4px 4px;
+    margin: 0px 6px 0px 6px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+/* codeblock */
+.md-fences,
+.md-fences:active {
+    background-color: var(--bg-color5);
+    border-radius: 6px;
+    padding: 8px 4px 8px 4px !important;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+.md-fences .code-tooltip {
+    display: block !important;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+    background-color: var(--bg-color3);
+}
+
+.md-fences.md-focus .code-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+.CodeMirror-lines {
+    padding-left: 4px;
+}
+
+/* selected text and cursor */
+.CodeMirror-selected,
+.CodeMirror-selectedtext {
+    background: var(--code-select-bg-color) !important;
+}
+
+.CodeMirror div.CodeMirror-cursor {
+    border-left: 2px solid var(--code-cursor-color);
+    z-index: 3;
+}
+
+.CodeMirror.cm-s-typora-default div.CodeMirror-cursor {
+    border-left: 3px solid var(--code-cursor-color);
+}
+
+/* highlight */
+.cm-s-inner .cm-property {
+    color: var(--code-blue-color) !important;
+}
+
+.cm-s-inner .cm-operator {
+    color: var(--code-cyan-color) !important;
+}
+
+.cm-s-inner .cm-keyword {
+    color: var(--code-purple-color) !important;
+}
+
+.cm-s-inner .cm-tag {
+    color: var(--code-red-color) !important;
+}
+
+.cm-s-inner .cm-attribute {
+    color: var(--code-orange-color) !important;
+}
+
+.cm-s-inner .cm-string {
+    color: var(--code-green-color) !important;
+}
+
+.cm-s-inner .cm-comment,
+.cm-s-inner.cm-comment {
+    /*     color: var(--code-orange-color) !important; */
+    color: var(--code-grey-color) !important;
+    font-style: italic;
+}
+
+.cm-s-inner .cm-header,
+.cm-s-inner .cm-def,
+.cm-s-inner.cm-header,
+.cm-s-inner.cm-def {
+    /*     color: var(--code-red-color) !important; */
+    color: var(--code-blue-color) !important;
+}
+
+.cm-s-inner .cm-meta,
+.cm-s-inner .cm-qualifier {
+    color: var(--code-red-color) !important;
+}
+
+.cm-s-inner .cm-builtin {
+    /*     color: var(--code-blue-color) !important; */
+    color: var(--code-cyan-color) !important;
+}
+
+.cm-s-inner .cm-bracket {
+    color: var(--text-color1) !important;
+}
+
+.cm-s-inner .cm-number {
+    color: var(--code-orange-color) !important;
+}
+
+.cm-s-inner .cm-variable {
+    color: var(--text-color1) !important;
+}
+
+.cm-s-inner .cm-variable-2 {
+    /*     color: var(--code-blue-color) !important; */
+    color: var(--code-yellow-color) !important;
+}
+
+.cm-s-typora-default .cm-header,
+.cm-s-typora-default .cm-property {
+    color: var(--code-red-color) !important;
+}
+
+.cm-s-typora-default .cm-string {
+    /*     color: var(--code-blue-color); */
+    color: var(--code-purple-color);
+}
+
+.cm-s-typora-default .cm-atom {
+    color: var(--code-grey-color);
+    font-style: italic;
+}
+
+.cm-s-typora-default .cm-number {
+    color: var(--code-orange-color);
+    font-style: normal !important;
+}
+
+.cm-s-typora-default .cm-link {
+    color: var(--code-blue-color);
+}
+
+.cm-s-typora-default .CodeMirror-activeline-background {
+    background: var(--hover-bg-color1);
+}
+
+.cm-s-typora-default .cm-comment,
+.cm-s-typora-default .cm-code {
+    color: var(--code-purple-color);
+}
+
+.cm-s-typora-default .cm-tag {
+    /*     color: var(--code-red-color); */
+    color: var(--code-blue-color);
+}
+
+.cm-s-typora-default .cm-strong,
+.cm-s-typora-default .cm-em,
+.cm-s-typora-default .cm-del {
+    /*     color: var(--code-green-color); */
+    color: var(--code-orange-color)
+}
+
+.cm-s-typora-default .cm-block-start.cm-variable-2 {
+    /*     color: var(--code-orange-color); */
+    color: var(--code-red-color);
+}
+
+.cm-formatting-task .cm-formatting-task {
+    color: var(--code-red-color);
+}
+
+/* math formula tag */
+.cm-s-inner .cm-atom,
+.cm-s-inner.cm-atom {
+    color: var(--code-blue-color);
+}
+
+/* inline codeblock in source mode */
+.cm-s-typora-default .cm-comment {
+    color: var(--code-green-color);
+}
+
+/* horizontal divider when language is markdown */
+.cm-s-inner .cm-hr {
+    color: var(--text-color1);
+}
+
+/* variable type when language is c/cpp */
+.cm-s-inner .cm-variable-3 {
+    color: var(--code-purple-color);
+}
+
+/* unknown highlight keyword */
+.cm-s-inner .cm-quote,
+.cm-s-inner.cm-quote {
+    color: #57ac57;
+}
+
+.cm-s-inner .cm-link {
+    color: var(--code-blue-color);
+}
+
+.cm-s-inner .cm-negative {
+    color: #d95050;
+}
+
+.cm-s-inner .cm-positive {
+    color: #50e650;
+}
+
+.cm-s-inner .cm-string-2 {
+    color: #f50;
+}
+
+.CodeMirror-gutters {
+    border-right: none;
+}
+
+/* focus mode */
+.on-focus-mode .md-end-block:not(.md-focus) .md-toc-item {
+    opacity: 0.5;
+}
+
+.on-focus-mode #write h1:not(.md-focus):before {
+    opacity: 0.5;
+}
+
+.on-focus-mode #write h2:not(.md-focus):before {
+    opacity: 0.5;
+}
+
+.on-focus-mode #write h1:not(.md-focus) {
+    border-color: var(--text-color5);
+}
+
+.on-focus-mode #write h2:not(.md-focus) {
+    border-color: var(--text-color5);
+}
+
+.on-focus-mode #write h3:not(.md-focus) {
+    border-color: var(--text-color5);
+}
+
+/* YAML block */
+pre.md-meta-block,
+pre.md-meta-block:active {
+    background-color: var(--bg-color5);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+    border-radius: 6px;
+    padding: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+
+/* switch between different mode */
+#typora-source {
+    display: block !important;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.typora-sourceview-on #typora-source {
+    visibility: visible;
+    opacity: 1;
+}
+
+#typora-source .CodeMirror-lines {
+    max-width: 1200px;
+    padding-left: 70px;
+    padding-right: 70px;
+}
+
+#write {
+    display: block !important;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+    max-width: 1200px;
+    padding-left: 70px;
+    padding-right: 70px;
+}
+
+:not(.typora-sourceview-on) #write {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* #md-searchpanel {
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s !important;
+}
+
+.on-search-panel-open #md-searchpanel {
+    visibility: visible;
+    opacity: 1;
+} */
+
+.uni-preference-panel {
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.show-preference-panel .uni-preference-panel {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+/* quick open menu */
+.typora-quick-open-item:hover {
+    background-color: var(--hover-bg-color1);
+    color: var(--hover-text-color);
+}
+
+
+/* insert table panel */
+.modal-content {
+    border: 0px;
+    border-radius: 6px;
+}
+
+.modal-content .btn-primary {
+    background-color: var(--hover-bg-color1);
+    color: var(--text-color1);
+    outline-width: 0px;
+}
+
+.modal-content .btn-primary:hover {
+    color: var(--hover-text-color);
+}
+
+.modal-content .form-control,
+.modal-content .form-control:focus {
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+}
+
+.modal-backdrop {
+    background-color: black;
+    opacity: 0.3 !important;
+}
+
+/* zoom  */
+#zoom-hint #zoom-hint-reset {
+    color: var(--text-color1)
+}
+
+#zoom-hint .zoom-hint-button:hover {
+    color: var(--hover-text-color) !important;
+}
+
+/* word count */
+#footer-word-count-info {
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.ty-show-word-count #footer-word-count-info {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* spell check */
+#spell-check-panel {
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.ty-show-spell-check #spell-check-panel {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* search result */
+.md-search-select {
+    border: 2px solid rgb(69, 125, 255);
+    box-sizing: content-box;
+    color: var(--text-color1) !important;
+}
+
+.md-search-hit {
+    background-color: var(--search-select-bg-color);
+}
+
+/* search panel message */
+#searchpanel-msg {
+    background-color: var(--bg-color2);
+    color: var(--text-color2);
+}
+
+.searchpanel-msg-btn:hover {
+    background-color: var(--hover-bg-color1);
+    color: var(--hover-text-color);
+}
+
+/* language selection for codeblock */
+.auto-suggest-container {
+    border: 0px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, .2);
+    background-color: var(--bg-color2);
+}
+
+
+/* sidebar outline item hover and active */
+.outline-item:hover {
+    color: var(--hover-text-color);
+}
+
+.outline-label:hover {
+    text-decoration: none;
+}
+
+.pin-outline .outline-active {
+    color: var(--hover-text-color);
+}
+
+/* sidebar title hover */
+.info-panel-tab:hover {
+    color: var(--hover-text-color) !important;
+}
+
+/* active file in sidebar file menu treeview */
+.file-tree-node.active>.file-node-background {
+    background-color: var(--hover-bg-color1);
+}
+
+/* hover file in sidebar file menu treeview */
+.file-node-content:hover {
+    cursor: pointer;
+}
+
+/* saved button in megamenu */
+#m-saved:hover {
+    background-color: var(--bg-color2);
+    color: var(--text-color2);
+    cursor: default;
+}
+
+/* mermaid sequence*/
+text.actor {
+    fill: var(--text-color1);
+}
+
+.labelText {
+    fill: var(--text-color1);
+}
+
+.loopText {
+    fill: var(--text-color1);
+}
+
+/* mermaid flowchart */
+.node rect,
+.node circle,
+.node ellipse,
+.node polygon {
+    fill: var(--bg-color2);
+    stroke: var(--text-color1);
+    stroke: var(--menu-divider-color);
+}
+
+.edgePath .path {
+    stroke: var(--menu-divider-color);
+}
+
+.label {
+    color: var(--text-color1);
+}
+
+/* mermaid gantt */
+.titleText {
+    fill: var(--text-color1);
+}
+
+.section0,
+.section2 {
+    fill: var(--table-thread-color);
+}
+
+.section1,
+.section3 {
+    fill: var(--table-bg-color);
+}
+
+.task0,
+.task1,
+.task2,
+.task3 {
+    fill: rgb(80, 84, 90);
+    stroke: rgb(80, 84, 90);
+}
+
+.taskText0,
+.taskText1,
+.taskText2,
+.taskText3 {
+    fill: var(--text-color2) !important;
+}
+
+.active0,
+.active1,
+.active2,
+.active3 {
+    fill: rgb(100, 104, 110);
+    stroke: rgb(100, 104, 110);
+}
+
+.activeText0,
+.activeText1,
+.activeText2,
+.activeText3 {
+    fill: var(--text-color2) !important;
+}
+
+.done0,
+.done1,
+.done2,
+.done3 {
+    fill: rgb(48, 51, 58);
+    stroke: rgb(48, 51, 58);
+}
+
+.crit0,
+.crit1,
+.crit2,
+.crit3 {
+    fill: rgb(150, 150, 150);
+    stroke: var(--text-color1);
+}
+
+.activeCrit0,
+.activeCrit1,
+.activeCrit2,
+.activeCrit3 {
+    fill: rgb(100, 104, 110);
+    stroke: var(--text-color1);
+}
+
+.doneCrit0,
+.doneCrit1,
+.doneCrit2,
+.doneCrit3 {
+    fill: rgb(48, 51, 58);
+    stroke: var(--text-color1);
+}
+
+.taskTextOutside0,
+.taskTextOutside2,
+.taskTextOutside1,
+.taskTextOutside3 {
+    fill: var(--text-color1) !important;
+}
+
+.grid text {
+    fill: white;
+}
+
+.today {
+    stroke: var(--text-color1)
+}
+
+/* flow diagram */
+.md-fences[lang=flow] .md-diagram-panel-preview rect {
+    fill: var(--bg-color2);
+    stroke: var(--menu-divider-color);
+    stroke-width: 1.2;
+}
+
+.md-fences[lang=flow] .md-diagram-panel-preview path {
+    stroke: var(--menu-divider-color);
+    stroke-width: 1.2;
+}
+
+.md-fences[lang=flow] #cond {
+    fill: var(--bg-color2);
+}
+
+/* sequence diagram */
+.md-fences[lang=sequence] .md-diagram-panel-preview rect:not([fill=none]) {
+    fill: var(--bg-color2);
+    stroke: var(--menu-divider-color);
+    stroke-width: 1.2;
+}
+
+.md-fences[lang=sequence] .md-diagram-panel-preview path {
+    fill: var(--menu-divider-color);
+    stroke: var(--menu-divider-color);
+    stroke-width: 1.2;
+}
+
+.md-fences[lang=sequence] text,
+.md-fences[lang=flow] text {
+    font-family: 'Consolas' !important;
+}
+
+/* remove box shadow when not edit graph */
+.md-fences[lang=sequence]:not(.md-focus),
+.md-fences[lang=mermaid]:not(.md-focus),
+.md-fences[lang=flow]:not(.md-focus) {
+    box-shadow: none;
+}
+
+/* remove border when edit graph */
+.md-diagram-panel {
+    border: none !important;
+}
+
+
+</style>
+</head>
+<body class='typora-export os-windows' >
+<div  id='write'  class = 'is-node'><p>&nbsp;</p><h3><a name="网络osi模型" class="md-header-anchor"></a><span>网络OSI模型：</span></h3><p><img src="./osi%E4%B8%83%E5%B1%82%E6%A8%A1%E5%9E%8B.png" referrerpolicy="no-referrer" alt="image-20200903222102858"></p><ul><li><span>物理层:在设备之间传输比特流，规定了电平、速度和电缆针脚。</span></li><li><span>数据链路层：将比特组合成字节，再将字节组合成帧，使用链路层地址（以太网使用MAC地址）来访问介质，并进行差错检测。</span></li><li><span>网络层：提供逻辑地址，供路由器确定路径。</span></li><li><span>传输层：提供面向连接或非面向连接的数据传递以及进行重传前的差错检测。</span></li><li><span>会话层：负责建立、管理和终止表示层实体之间的通信会话。该层的通信由不同设备中的应用程序之间的服务请求和响应组成。</span></li><li><span>表示层：提供各种用于应用层数据的编码和转换功能，确保一个系统的应用层发送的数据能被另一个系统的应用层识别。</span></li><li><span>应用层：OSI参考模型中最靠近用户的一层，为应用程序提供网络服务。</span></li></ul><p>&nbsp;</p><p>&nbsp;</p><h3><a name="tcpip四层模型" class="md-header-anchor"></a><span>TCP/IP四层模型</span></h3><p><img src="./TCP:IP.png" referrerpolicy="no-referrer" alt="image-20200903224706624"></p><p>&nbsp;</p><h3><a name="三-以太网帧" class="md-header-anchor"></a><span>三 以太网帧 </span></h3><p>&nbsp;</p><p><img src="./%E4%BB%A5%E5%A4%AA%E7%BD%91%E5%B8%A7.png" referrerpolicy="no-referrer" alt="image-20200903230730526"></p><p><span>目的 MAC 地址：6 个字节，指明帧的接收者。</span></p><p><span>源 MAC 地址：6 个字节，指明帧的发送者。</span></p><p><span>类型：2 个字节，指明帧中数据的协议类型，比如常见的 IPv4 中的 ip 协议采用 0x0800。</span></p><p><span>数据与填充：46~1500 个字节，包含了上层协议传递下来的数据，如果加入数据字段后帧长度不够 64 字节，会在数据字段加入填充字段达到 64 字节。</span></p><p><span>校验和：4 个字节，对接收网卡(主要是检测数据与填充字段)提供判断是否传输错误的一种方法，如果发现错误，则丢弃此帧。目前最为流行的用于校验和(FCS)的算法是循环冗余校验(cyclic redundancy check -- CRC)。</span></p><p>&nbsp;</p><h3><a name="四-ip帧" class="md-header-anchor"></a><span>四 IP帧</span></h3><p><span>IP 协议是 TCP/IP 协议族中最为核心的协议，它提供不可靠的、无连接的服务，也即依赖其他层的协议进行差错控制。在局域网中，IP 协议往往被封装在以太网帧中传送，而所有的 TCP、UDP、ICMP、IGMP 数据都被封装在 IP 数据报中传送。</span></p><p><img src="20181102155002673.png" referrerpolicy="no-referrer" alt="img"></p><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="" style="break-inside: unset;"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre>x</pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">/*IP 头定义，共 20 个字节*/</span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">typedef struct _IP_HEADER</span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  char m_cVersionAndHeaderLen; &nbsp;  //前4位：版本信息；后4位：头长度</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  char m_cTypeOfService; &nbsp; &nbsp; &nbsp; &nbsp;  //服务类型 8 位</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  short m_sTotalLenOfPacket; &nbsp; &nbsp;  //数据包长度</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  short m_sPacketID; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  //数据包标识</span></pre><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  short m_sSliceinfo; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; //分片使用</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  char m_cTTL; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  //存活时间</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  char m_cTypeOfProtocol; &nbsp; &nbsp; &nbsp; &nbsp; //协议类型</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  short m_sCheckSum; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  //校验和</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  unsigned int m_uiSourIp; &nbsp; &nbsp; &nbsp;  //源IP</span></pre><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  unsigned int m_uiDestIp; &nbsp; &nbsp; &nbsp;  //目的IP</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}__attribute__((packed))IP_HEADER,*PIP_HEADER;</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 350px;"></div><div class="CodeMirror-gutters" style="display: none; height: 350px;"></div></div></div></pre><p><span>版本：4 位，用来表明 IP 协议实现的版本号，当前一般为 IPv4，即 0100，IPv6 的为 0110，这个字段确保可能运行不同 IP 版本的设备之间的兼容性。</span></p><p><span>首部长度：即报头长度，4 位，以 32 bit 的字来定义 IP 首部的长度，包括可选项。若该字段的最小值是 5 (标准头部长度)，即 5</span><em><span>32=160 比特 =20 字节，此字段最大值为15 (有扩展部分)，即15</span></em><span>32 =480 比特 = 60 字节。</span></p><p><span>服务类型：8位，用于携带提供服务质量特征信息的字段，服务类型字段声明了数据报被网络系统传输时可以被怎样处理。其中前 3 比特位优先权子字段(Precedence，现已被忽略，各种终端都不采用)。第 8 比特保留未用。第 4 至第 7 比特分别代表延迟、吞吐量、可靠性和花费，当它们取值为 1 时分别代表要求最小时延、最大吞吐量、最高可靠性和最小花费，这 4 比特的服务类型中只能置其中 1 比特为 1，可以全为 0 ，若全为 0 则表示一般服务，大多数情况下该服务类型会被忽略。</span></p><p><span>总长度：16 位，指明整个数据报的长度，按字节计算，最大长度为 2^16 字节。</span></p><p><span>标识：16 位，用来唯一标识主机发送的每一份数据报，IP 软件会在存储器中维持一个计数器，每产生一个数据段，计数器就加 1，并将此值赋给标志字段。但这个“标识”并不是序号，因为 IP 是无连接服务，数据报不存在按序接收问题，如数据报由于超过网络的 MTU (最大传送单元) 而必须分片时，这个标志字段的值就会被复制到所有的数据报的标识字段中，相同的标识字段的值使分片后各数据报片能正确的重装成为原来的数据报。</span></p><p><span>标志：3 位，分别是 RF、DF、 MF，目前只有 DF，MF 有效，DF(don&#39;t fragment)，置为 0 时表示可以分段，置为 1 时是不能被分段，MF(more fragment)，置为 0 时表示该数据段为最后一个数据段，置为 1 时表示后面还有被分割分段。</span></p><p><span>段偏移量：13 位，指出较长的分组在分段后，某段在原分组的相对位置。也就是说相对用户字段的起点，该片从何处开始。段偏移以 8 个字节(有 3 位被 flags 占据)为偏移单位，这就是每个分片的长度一定是 8 字节 (64位) 的整数倍。</span></p><p><span>生存期：8 位，用来设置数据报最多可以经过的路由器数，由发送数据的源主机设置，通常为 32、64、128等，每经过一个路由器，其值减 1 ，直到 0 该数据报被丢弃。</span></p><p><span>协议：8 位，指明 ip 数据字段中的数据采用上层什么协议封装的，常见的有 ICMP(1)、IGMP(2)、TCP(6)、UDP(17)</span></p><p><span>首部校验和：16位，填充根据 ip 头部计算得到的校验和码。计算方法是：对头部中每个 16 比特进行二进制反码求和，但不含涉及头部后的数据字段。</span></p><p><span>源 IP 地址：源 ip 地址，32 位。</span></p><p><span>目的 IP 地址：目标 ip 地址，32 位。</span></p><p><span>选项：n*32 位，用来定义一些可选项：如记录路径、时间戳等，但这些选项很少被使用，同时并不是所有主机和路由器都支持这些选项。可选字段的长度必须是 32 比特的整数倍，如果不足，必须填充 0 以达到此长度要求，根据 IHL(首部长度) 可以得到选项的长度。</span></p><p><span>数据：不定长度，但受限于数据报的最大长度 2^16 ，这是在数据报中要传输的数据，它是一个完整的较高层报文或报文的一个分片。</span></p><p>&nbsp;</p><h3><a name="五-udp-帧" class="md-header-anchor"></a><span>五 UDP 帧</span></h3><p><span>UDP(User Datagram Protocol) 即用户数据报协议，在网络中它与 TCP 协议一样用于处理数据包，是一种不可靠(服务不用确认、不对报文排序、不进行流量控制，可能会出现丢失、重复、失序现象)、无连接(在主机间不建立会话)的协议，在 OSI 模型中的第四层--传输层，处于 IP 协议的上一层。由于 UDP 传输不是可靠性服务，所以帧结构较为简单，而且处理与发送速率高，开销要求低，支持点对点和一点对多点的通信，经常用作音频、视频和普通数据的传输协议，因为它们即使偶尔丢失一两个数据包，也不会对接收结果产生太大影响。</span></p><p><img src="20181102154937761.png" referrerpolicy="no-referrer" alt="img"></p><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang=""><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">/*UDP 头定义，共 8 个字节*/</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">typedef struct_UDP_HEADER</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  unsigned short m_usSourPort; &nbsp; &nbsp; //源端口号 16 bit</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  unsigned short m_usDestPort; &nbsp; &nbsp; //目的端口号 16 bit</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  unsigned short m_usLength; &nbsp; &nbsp;  //数据包长度 16 bit</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  unsigned short m_usCheckSum; &nbsp;  //校验和 16 bit</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}__attribute__((packed))UDP_HEADER,*PUDP_HEADER;</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 200px;"></div><div class="CodeMirror-gutters" style="display: none; height: 200px;"></div></div></div></pre><p><span>源端口：16 bit (2 个字节)，是一个大于 1023 的 16 位数字，由基于 UDP 应用程序的用户进程随机选择。</span></p><p><span>目的端口：16 bit (2 个字节)，指明接收者所用的端口号，一般由应用程序来指定。</span></p><p><span>数据长度：16 bit (2 个字节)，标明 UDP 头部和 UDP 数据的总字节长度。</span></p><p><span>校验和字段：16 bit (2 个字节)，用来对 UDP 头部和 UDP 数据进行校验。与 TCP 不同的是，此字段是可选项，而 TCP 数据段中必须包含校验和字段。</span></p><p><span>数据：不定长度，为上层协议封装好的数据。</span></p><p>&nbsp;</p><h3><a name="六-tcp-帧" class="md-header-anchor"></a><span>六 TCP 帧</span></h3><p><span>TCP(Transmission Control Protocol) 即传输控制协议，是一种面向连接的(需通过三次握手来建立 TCP 连接，在主机间建立会话)、可靠的(TCP 通过确认和按顺序传递来确保数据的传递)、基于字节流的传输层通信协议，但 TCP 传输比较慢，开销略高，并且只支持点对点通信。当应用层向 TCP 层发送用于网间传输的 8 字节表示的数据流，TCP 则把数据流分割成适当长度的报文段，最大传输段大小(MSS)通常受该计算机连接的网络的数据链路层的最大传送单元(MTU)限制，之后 TCP 把数据包传给 IP 层，由它来通过网络将包传送给接收端实体的 TCP 层。</span></p><p><img src="20181102154949686.png" referrerpolicy="no-referrer" alt="img"></p><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang=""><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang=""><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">/*TCP 头定义，共 20 个字节*/</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">typedef struct_TCP_HEADER</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  short m_sSourPort; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  //源端口号 16 bit</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  short m_sDestPort; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  //目的端口号 16 bit</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  unsigned int m_uiSeqNum; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  //序列号 32 bit</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  unsigned int m_uiAcknowledgeNum; &nbsp;  //确认号 32 bit</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  short m_sHeaderLenAndFlag; &nbsp; &nbsp; &nbsp; &nbsp;  //前4位：TCP 头长度；中6位：保留；后6位：标志位</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  short m_sWindowSize; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  //窗口大小 16 bit</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  short m_sCheckSum; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;  //校验和 16 bit</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;  short m_surgentPointer; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; //紧急数据偏移量 16 bit</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}__attribute__((packed))TCP_HEADER,*PTCP_HEADER;</span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 300px;"></div><div class="CodeMirror-gutters" style="display: none; height: 300px;"></div></div></div></pre><p><span> 源端口：2 个字节，是一个大于 1023 的 16 位数字，由基于 TCP 应用程序的用户进程随机选择。</span></p><p><span>目的端口：2 个字节，指明接收者所用的端口号，一般由应用程序来指定。</span></p><p><span>顺序号：4 个字节，用来标识从 TCP 源端向 TCP 目的端发送的数据字节流，它表示在这个报文段中的第一个数据字节的顺序号。如果将字节流看作在两个应用程序间的单向流动，则 TCP 用顺序号对每个字节进行计数，序号是 32 bit 的无符号数，序号达到 2^32-1 后又从 0 开始。比如我们收到一个数据报中 sq(顺序号) =0，数据报内容为 20 字节，那么下一个数据报的 sq 就应该是 21。当建立一个新的连接时，SYN 标志变为 1，顺序号字段包含由这个主机选择的该连接的初始顺序号 ISN。</span></p><p><span>确认序号：4 个字节，包含发送确认的一端所期待收到的下一个顺序号。因此，确认序号应该是上次已经成功收到数据字节顺序号加 1 。比如我们收到的一个数据报的 sq = 0 ，数据报内容为 20 字节，那么我们的 ack(确认序号) 应该是 21 ，用来表明 sq=0 ，内容为 20 字节的数据报已经收到，接下来期望收到的是 sq=21 的数据报。只有 ACK 标志为 1 时确认序号字段才有效。</span></p><p><span>报文长度：4 位，给出报头中 32 bit 字的数目，需要这个值是因为任选字段的长度是可变的，这个字段占 4 bit，即 TCP 最多有 60 (15*4) 字节的首部。</span></p><p><span>保留区：6 位，保留给将来使用，目前必须置为 0 。</span></p><p><span>控制位：6位，控制位包括</span></p><p><span>URG：为 1 表示紧急指针有效，为 0 则忽略紧急指针值。</span></p><p><span>ACK：为 1 表示确认号有效，为 0 表示报文中不包含确认信息，忽略确认号字段。</span></p><p><span>PSH：为 1 表示是带有 PUSH 标志的数据，表示发送端缓存中已经没有待发送的数据，指示接收方应该尽快将这个报文段交给应用层而不用等待缓冲区装满。</span></p><p><span>RST：用于复位由于主机崩溃或其他原因而出现错误的连接。它还可以用于拒绝非法的报文段和拒绝连接请求。一般情况下，如果收到一个 RST 为 1 的报文，那么一定发生了某些问题。</span></p><p><span>SYN：同步序号，为 1 表示连接请求，用于建立连接和使顺序号同步。</span></p><p><span>FIN：用于释放连接，为 1 表示发送方已经没有数据发送了，即关闭本方数据流。</span></p><p><span>窗口大小：2 个字节，表示从确认号开始，本报文的源方可以接收的字节数，即源方接收窗口的大小。窗口大小是一个 16 bit 字段，因而窗口大小最大为 2^16-1 。</span></p><p><span>校验和：2 个字节，对整个的 TCP 报文段(包括 TCP 头部和 TCP 数据以及伪报文头)进行校验和计算。这是一个强制性的字段，要求由发送方计算和存储，并由接收端进行验证(接收端要与发送端数值结果完全一样，才能证明数据是有效的)。</span></p><p><span>紧急指针：2 个字节，是一个正的偏移量，和顺序号字段中的值相加表示紧急数据最后一个字节的序号。TCP 的紧急方式是发送端向另一端发送紧急数据的一种方式，只有当 URG 标志置为 1 时紧急指针才有效。</span></p><p><span>选项：n*4 字节，常见的可选字段是最长报文大小 MSS(Maximum Segment Size)。每个连接方通常都在通信的第一个报文段 (为建立连接而设置 SYN 标志的那个段) 中指明这个选项，它指明本端所能接收的最大长度的报文段。选项长度不一定是 32 位字的整数倍，所以需要添加填充位，使得报文长度为 32 位字的整数倍。</span></p><p><span>数据：不定长度，为上层协议封装好的数据。</span></p><p>&nbsp;</p><h3><a name="网卡驱动层次划分" class="md-header-anchor"></a><span>网卡驱动层次划分</span></h3><p><span>1)网络协议接口层:</span></p><p><span>	</span><span>实现统一的数据包收发的协议,该层主要负责调用dev_queue_xmit()函数发送数据， netif_rx()函数接收数据</span></p><p><span>2)网络设备接口层:</span></p><p><span>	</span><span>通过net_device结构体来描述一个具体的网络设备的信息,实现不同的硬件的统一</span></p><p><span>3)设备驱动功能层：</span></p><p><span>	</span><span>用来负责驱动网络设备硬件来完成各个功能, 它通过hard_start_xmit() 函数启动发送操作， 并通过网络设备上的中断触发接收操作,</span></p><p><span>4)网络设备与媒介层：</span></p><p><span>	</span><span>用来负责完成数据包发送和接收的物理实体, 设备驱动功能层的函数都在这物理上驱动的</span></p><p>&nbsp;</p><h3><a name="层次结构如下图所示" class="md-header-anchor"></a><span>层次结构如下图所示</span></h3><p><img src="%E7%BD%91%E5%8D%A1%E9%A9%B1%E5%8A%A8%E5%88%86%E5%B1%82.png" referrerpolicy="no-referrer" alt="img"></p><p>&nbsp;</p><h3><a name="netdevice结构体成员" class="md-header-anchor"></a><span>Net_device结构体成员</span></h3><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="c" style="break-inside: unset;"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="c"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre>x</pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">struct</span> <span class="cm-def">net_device</span></span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">char</span> &nbsp; &nbsp; <span class="cm-variable">name</span>[<span class="cm-variable">IFNAMSIZ</span>]; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-comment">//网卡设备名称</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">long</span> &nbsp; <span class="cm-variable">mem_end</span>; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-comment">//该设备的内存结束地址</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">long</span> &nbsp; <span class="cm-variable">mem_start</span>; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-comment">//该设备的内存起始地址</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">long</span> &nbsp; <span class="cm-variable">base_addr</span>; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-comment">//该设备的内存I/O基地址</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">int</span> &nbsp; &nbsp;<span class="cm-variable">irq</span>; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-comment">//该设备的中断号</span></span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">char</span> &nbsp; <span class="cm-variable">if_port</span>; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-comment">//多端口设备使用的端口类型</span></span></pre><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">　<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">char</span> &nbsp; &nbsp;<span class="cm-variable">dma</span>; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="cm-comment">//该设备的DMA通道</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">long</span> &nbsp;<span class="cm-variable">state</span>; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-comment">//网络设备和网络适配器的状态信息</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-keyword">struct</span> <span class="cm-def">net_device_stats</span><span class="cm-operator">*</span> (<span class="cm-operator">*</span><span class="cm-variable">get_stats</span>)(<span class="cm-keyword">struct</span> <span class="cm-def">net_device</span> <span class="cm-operator">*</span><span class="cm-variable">dev</span>); </span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">//获取流量的统计信息,运行ifconfig便会调用该</span></span></pre><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">//成员函数,并返回一个net_device_stats结构体获取信息</span></span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-keyword">struct</span> <span class="cm-def">net_device_stats</span> &nbsp;<span class="cm-def">stats</span>; &nbsp;</span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">//用来保存统计信息的net_device_stats结构体</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">long</span> &nbsp; &nbsp; <span class="cm-variable">features</span>; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-comment">//接口特征, &nbsp; &nbsp; </span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">int</span> &nbsp; &nbsp; &nbsp;<span class="cm-variable">flags</span>; </span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">//flags指网络接口标志,以IFF_(Interface Flags)开头</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">//当flags =IFF_UP（ 当设备被激活并可以开始发送数据包时， </span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">//内核设置该标志）、 IFF_AUTOMEDIA（设置设备可在多种媒介间切换）、</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">//IFF_BROADCAST（ 允许广播）、IFF_DEBUG（ 调试模式， 可用</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">//于控制printk调用的详细程度） 、 IFF_LOOPBACK（ 回环）、</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">//IFF_MULTICAST（ 允许组播） 、 IFF_NOARP（ 接口不能执行ARP,</span></span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">//点对点接口就不需要运行 ARP） 和IFF_POINTOPOINT（ 接口连接到点到点链路） </span></span></pre><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> &nbsp; &nbsp;<span class="cm-variable">mtu</span>; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-comment">//最大传输单元,也叫最大数据包1500</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">short</span> &nbsp;<span class="cm-variable">type</span>; &nbsp; <span class="cm-comment">//接口的硬件类型</span></span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">short</span> <span class="cm-variable">hard_header_len</span>; &nbsp; &nbsp; </span></pre><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">//硬件帧头长度,一般被赋为ETH_HLEN,即14</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">char</span> &nbsp; <span class="cm-variable">dev_addr</span>[<span class="cm-variable">MAX_ADDR_LEN</span>]; <span class="cm-comment">//存放设备的MAC地址</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">long</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-variable">last_rx</span>; &nbsp; &nbsp;</span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">//接收数据包的时间戳,调用netif_rx()后赋上jiffies即可</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">long</span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<span class="cm-variable">trans_start</span>; &nbsp; &nbsp; </span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">//发送数据包的时间戳,当要发送的时候赋上jiffies即可</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp;<span class="cm-keyword">const</span> <span class="cm-keyword">struct</span> <span class="cm-def">net_device_ops</span> <span class="cm-operator">*</span><span class="cm-variable">netdev_ops</span>;<span class="cm-comment">/*网络设备操作方法集合*/</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}</span></pre></div></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 900px;"></div><div class="CodeMirror-gutters" style="display: none; height: 900px;"></div></div></div></pre><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="c" style="break-inside: unset;"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="c"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre>x</pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">struct</span> <span class="cm-def">net_device_stats</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">{</span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; <span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">long</span> &nbsp; &nbsp; &nbsp; <span class="cm-variable">rx_packets</span>; <span class="cm-comment">/*收到的数据包数*/</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; <span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">long</span> &nbsp; &nbsp; &nbsp; <span class="cm-variable">tx_packets</span>; <span class="cm-comment">/*发送的数据包数*/</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; <span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">long</span> &nbsp; &nbsp; &nbsp; <span class="cm-variable">rx_bytes</span>; &nbsp; </span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; <span class="cm-comment">/*收到的字节数,可以通过sk_buff结构体的成员len来获取*/</span></span></pre><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; <span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">long</span> &nbsp; &nbsp; &nbsp; <span class="cm-variable">tx_bytes</span>; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; <span class="cm-comment">/*发送的字节数,可以通过sk_buff结构体的成员len来获取*/</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; <span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">long</span> &nbsp; &nbsp; &nbsp; <span class="cm-variable">rx_errors</span>; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; <span class="cm-comment">/*收到的错误数据包数*/</span></span></pre><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; <span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">long</span> &nbsp; &nbsp; &nbsp; <span class="cm-variable">tx_errors</span>; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; <span class="cm-comment">/*发送的错误数据包数*/</span></span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; ... ...</span></pre><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}</span></pre></div></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 350px;"></div><div class="CodeMirror-gutters" style="display: none; height: 350px;"></div></div></div></pre><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="c"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="c"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre>x</pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">struct</span> <span class="cm-def">net_device_ops</span> {</span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable-3">int</span><span class="cm-tab" role="presentation" cm-text="	"> </span>(<span class="cm-operator">*</span><span class="cm-variable">ndo_open</span>)(<span class="cm-keyword">struct</span> <span class="cm-def">net_device</span> <span class="cm-operator">*</span><span class="cm-variable">dev</span>);<span class="cm-comment">//当ifconfig &nbsp; eth0  up </span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable-3">int</span><span class="cm-tab" role="presentation" cm-text="	"> </span>(<span class="cm-operator">*</span><span class="cm-variable">ndo_stop</span>)(<span class="cm-keyword">struct</span> <span class="cm-def">net_device</span> <span class="cm-operator">*</span><span class="cm-variable">dev</span>);<span class="cm-comment">//当ifconfig &nbsp; eth0  down</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">netdev_tx_t</span><span class="cm-tab" role="presentation" cm-text="	"> </span>(<span class="cm-operator">*</span><span class="cm-variable">ndo_start_xmit</span>) (<span class="cm-keyword">struct</span> <span class="cm-def">sk_buff</span> <span class="cm-operator">*</span><span class="cm-variable">skb</span>, </span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class="cm-keyword">struct</span> <span class="cm-def">net_device</span> <span class="cm-operator">*</span><span class="cm-variable">dev</span>);<span class="cm-comment">//app发送数据时。会被调用</span></span></pre></div><div class="" style="position: relative;"><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}<span class="cm-variable">；</span></span></pre></div></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 150px;"></div><div class="CodeMirror-gutters" style="display: none; height: 150px;"></div></div></div></pre><p>&nbsp;</p><h3><a name="网卡驱动的编写流程" class="md-header-anchor"></a><span>网卡驱动的编写流程</span></h3><p><span>1)使用alloc_netdev()来分配一个net_device结构体 </span></p><p><span>2)设置网卡硬件相关的寄存器</span></p><p><span>3)设置net_device结构体的成员</span></p><p><span>   //设置下面两项才能通过ping</span>
+<span>    ndev-&gt;flags |= IFF_NOARP; //关闭arp</span>
+<span>    ndev-&gt;features |= NETIF_F_V6_CSUM;//设备可以对ipv6进行校验和</span></p><p><span>4)使用register_netdev()来注册net_device结构体</span></p><p>&nbsp;</p><p>&nbsp;</p><h3><a name="网卡驱动中数据收发的skb" class="md-header-anchor"></a><span>网卡驱动中数据收发的skb</span></h3><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="c" style="break-inside: unset;"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="c"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">struct</span> <span class="cm-def">sk_buff</span> {</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-keyword">struct</span> <span class="cm-def">net_device</span><span class="cm-tab" role="presentation" cm-text="	">   </span><span class="cm-operator">*</span><span class="cm-variable">dev</span>;<span class="cm-comment">/*用于发送和接收该套接字缓冲区的网络设备对象*/</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">sk_buff_data_t</span><span class="cm-tab" role="presentation" cm-text="	">  </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">transport_header</span>;<span class="cm-comment">/*网络传输层协议头*/</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">sk_buff_data_t</span><span class="cm-tab" role="presentation" cm-text="	">  </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">network_header</span>;<span class="cm-comment">/*网络层协议头*/</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">sk_buff_data_t</span><span class="cm-tab" role="presentation" cm-text="	">  </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">mac_header</span>;<span class="cm-comment">/*网络mac层协议头*/</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">sk_buff_data_t</span><span class="cm-tab" role="presentation" cm-text="	">  </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">tail</span>;<span class="cm-comment">/*套接字缓冲区数据指针*/</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">sk_buff_data_t</span><span class="cm-tab" role="presentation" cm-text="	">  </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">end</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">char</span><span class="cm-tab" role="presentation" cm-text="	">   </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable-3">*</span><span class="cm-variable">head</span>,<span class="cm-operator">*</span><span class="cm-variable">data</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span cm-text="">​</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-comment">/*</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-comment">head：已经分配的空间的头部；</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-comment">end:  已经分配的空间尾部；head与end的位置不变</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-comment">data: 数据有效区的起始</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-comment">tail: 数据有效区的结尾</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-comment">*/</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">int</span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">len</span>,<span class="cm-variable">data_len</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">/*len套接字缓冲区全部数据的长度 ，data_len分片数据段的商都*/</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">int</span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">truesize</span>;</span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> &nbsp; &nbsp;<span class="cm-comment">/*skb所在空间+数据区的大小 = sizeof(skb) + len;*/</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">atomic_t</span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-tab" role="presentation" cm-text="	">    </span><span class="cm-variable">users</span>;<span class="cm-comment">/*缓冲区引用计数*/</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;">}<span class="cm-variable">；</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 525px;"></div><div class="CodeMirror-gutters" style="display: none; height: 525px;"></div></div></div></pre><p><img src="skb-data.png" referrerpolicy="no-referrer" alt="img"></p><p>&nbsp;</p><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="c"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="c"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">struct</span> <span class="cm-def">sk_buff</span> <span class="cm-operator">*</span><span class="cm-def">alloc_skb</span>(<span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">int</span> <span class="cm-variable">size</span>,<span class="cm-variable">gfp_t</span> <span class="cm-variable">priority</span>)<span class="cm-comment">//GFP_KERNEL GFP_ATOMIC..</span></span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">功能：分配套接字缓冲区及其数据区</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">参数：size</span>:<span class="cm-variable">套接字缓冲区所对应的数据区的大小（kmalloc）</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span> <span class="cm-variable">priority：分配区域标识</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">返回值：成功：struct</span> <span class="cm-variable">sk_buff指针对象</span> &nbsp; <span class="cm-variable">失败：NULL</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" class="cm-tab-wrap-hack" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" class="cm-tab-wrap-hack" style="padding-right: 0.1px;"><span class="cm-variable-3">void</span> <span class="cm-def">kfree_skb</span>(<span class="cm-keyword">struct</span> <span class="cm-def">sk_buff</span> <span class="cm-operator">*</span><span class="cm-variable">skb</span>)<span class="cm-tab" role="presentation" cm-text="	"> </span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">功能：释放一个套接字缓冲区及其对应数据的空间</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">参数：skb：struct</span> <span class="cm-variable">sk_buff</span> <span class="cm-variable">指针对象</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">返回值：无</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 250px;"></div><div class="CodeMirror-gutters" style="display: none; height: 250px;"></div></div></div></pre><p><span>	</span></p><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="c"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="c"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">char</span> <span class="cm-variable-3">*</span><span class="cm-def">skb_put</span>(<span class="cm-keyword">struct</span> <span class="cm-def">sk_buff</span> <span class="cm-operator">*</span><span class="cm-variable">skb</span>, <span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">int</span> <span class="cm-variable">len</span>)</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">功能</span>:<span class="cm-variable">向后移动skb</span><span class="cm-operator">-&gt;</span><span class="cm-variable">tail</span> &nbsp;<span class="cm-variable">len字节长度</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">参数：skb</span>:<span class="cm-keyword">struct</span> <span class="cm-def">sk_buff指针对象</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span> <span class="cm-def">len：增加的长度</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-def">返回值：skb</span><span class="cm-operator">-&gt;</span><span class="cm-variable">tail移动前的位置</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 125px;"></div><div class="CodeMirror-gutters" style="display: none; height: 125px;"></div></div></div></pre><p><img src="image-20200904001948845.png" referrerpolicy="no-referrer" alt="image-20200904001948845"></p><p><span>		</span></p><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="c"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="c"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation" style=""><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">char</span> <span class="cm-variable-3">*</span><span class="cm-def">skb_push</span>(<span class="cm-keyword">struct</span> <span class="cm-def">sk_buff</span> <span class="cm-operator">*</span><span class="cm-variable">skb</span>, <span class="cm-variable-3">unsigned</span> <span class="cm-variable-3">int</span> <span class="cm-variable">len</span>)</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">功能：将skb</span><span class="cm-operator">-&gt;</span><span class="cm-variable">data向前移动len字节长</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">参数：skb</span>:<span class="cm-keyword">struct</span> <span class="cm-def">sk_buff指针对象</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-tab" role="presentation" cm-text="	">    </span> <span class="cm-def">len：增加的长度</span></span></pre><pre class=" CodeMirror-line " role="presentation"><span role="presentation" class="cm-tab-wrap-hack" style="padding-right: 0.1px;"><span class="cm-def">返回值：移动后的skb</span><span class="cm-operator">-&gt;</span><span class="cm-variable">data指针</span><span class="cm-tab" role="presentation" cm-text="	"> </span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 125px;"></div><div class="CodeMirror-gutters" style="display: none; height: 125px;"></div></div></div></pre><p><img src="skb-push.png" referrerpolicy="no-referrer" alt="image-20200904002021777"></p><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="c"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="c"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-keyword">static</span> <span class="cm-variable">inline</span> <span class="cm-variable-3">void</span> <span class="cm-def">skb_reserve</span>(<span class="cm-keyword">struct</span> <span class="cm-def">sk_buff</span> <span class="cm-operator">*</span><span class="cm-variable">skb</span>, <span class="cm-variable-3">int</span> <span class="cm-variable">len</span>) </span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"> <span class="cm-variable">功能：一般填充如下格式skb_reserve</span>(<span class="cm-variable">skb</span>,<span class="cm-number">2</span>);<span class="cm-variable">在开头填充两个字节，用来进行字节对齐，因为以太网头14字节，对齐后是16字节</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 50px;"></div><div class="CodeMirror-gutters" style="display: none; height: 50px;"></div></div></div></pre><p>&nbsp;</p><h3><a name="网卡数据发送流程" class="md-header-anchor"></a><span>网卡数据发送流程</span></h3><p><span>网卡驱动创建tx descriptor ring（一致性DMA内存），将tx descriptor ring的总线地址写入网卡寄存器TDBA</span></p><p><span>协议栈通过dev_queue_xmit()将sk_buff下送网卡驱动</span></p><p><span>网卡驱动将sk_buff放入tx descriptor ring，更新TDT</span></p><p><span>DMA感知到TDT的改变后，找到tx descriptor ring中下一个将要使用的descriptor</span></p><p><span>DMA通过PCI总线将descriptor的数据缓存区复制到Tx FIFO</span></p><p><span>复制完后，通过MAC芯片将数据包发送出去</span></p><p><span>发送完后，网卡更新TDH，启动硬中断通知CPU释放数据缓存区中的数据包</span></p><p>&nbsp;</p><p><span>（协议栈通过dev_queue_xmit将sk_buff发送到网卡，网卡会将这个sk_buff放入队列，然后DMA感知到</span></p><p><span>新的数据到来，将数据发出去，发出去之后产生中断，通知cpu释放缓冲区中的数据包）</span></p><p>&nbsp;</p><p><span>hard_start_xmit()在发包函数中:</span></p><p><span>　　1)使用netif_stop_queue()来阻止上层向网络设备驱动层发送数据包。</span></p><p><span>　　2)调用收包函数,并代入发送的sk_buff缓冲区, 里面来伪造一个收的ping包函数。</span></p><p><span>　　3)使用dev_kfree_skb()函数来释放发送的sk_buff缓存区。</span></p><p><span>　　4)更新发送的统计信息。</span></p><p><span>　　5)使用netif_wake_queue()来唤醒被阻塞的上层。</span></p><p>&nbsp;</p><h3><a name="网卡数据的接收" class="md-header-anchor"></a><span>网卡数据的接收</span></h3><p><span>1、网卡驱动创建rx descriptor ring（一致性DMA内存），将rx descriptor ring的总线地址写入网卡寄存器RDBA</span></p><p><span>2、网卡驱动为每个descriptor分配sk_buff和数据缓存区，流式DMA映射数据缓存区，将数据缓存区的总线地址保存到descriptor</span></p><p><span>3、网卡接收数据包，将数据包写入Rx FIFO</span></p><p><span>4、DMA找到rx descriptor ring中下一个将要使用的descriptor</span></p><p><span>5、整个数据包写入Rx FIFO后，DMA通过PCI总线将Rx FIFO中的数据包复制到descriptor的数据缓存区</span></p><p><span>6、复制完后，网卡启动硬中断通知CPU数据缓存区中已经有新的数据包了，CPU执行硬中断函数：</span></p><ul><li><span>NAPI（以e1000网卡为例）：e1000_intr() -&gt; </span><strong><span>napi_schedule() -&gt; </span></strong><span>raise_softirq_irqoff(NET_RX_SOFTIRQ)</span></li><li><span>非NAPI（以dm9000网卡为例）：dm9000_interrupt() -&gt; dm9000_rx() -&gt; netif_rx() -&gt; napi_schedule() -&gt; </span><strong><span>napi_schedule() -&gt; </span></strong><span>raise_softirq_irqoff(NET_RX_SOFTIRQ)</span></li></ul><p><span>7、ksoftirqd执行软中断函数net_rx_action()：</span></p><ul><li><span>NAPI（以e1000网卡为例）：net_rx_action() -&gt; e1000_clean() -&gt; e1000_clean_rx_irq() -&gt; e1000_receive_skb() -&gt; netif_receive_skb()</span></li><li><span>非NAPI（以dm9000网卡为例）：net_rx_action() -&gt; process_backlog() -&gt; netif_receive_skb()</span></li></ul><p><span>8、网卡驱动通过netif_receive_skb()将sk_buff上送协议栈</span></p><p>&nbsp;</p><p><span>（网卡通过dma将数据搬运到内存上，然后产生中断，在中断处理函数中分配sk_buff，然后构造sk_buff,最后将构造号的sk_buff通过netif_rx()发送给协议栈）</span></p><p>&nbsp;</p><p><span>在收包函数中:</span></p><p><span>       1)需要对调上图的ethhdr结构体 ”源/目的”MAC地址。</span></p><p><span>　　2)需要对调上图的iphdr结构体”源/目的” IP地址。</span></p><p><span>　　3)使用ip_fast_csum()来重新获取iphdr结构体的校验码。</span></p><p><span>　　4)设置上图数据包的数据类型,之前是发送ping包0x08,需要改为0x00,表示接收ping包。</span></p><p><span>　　5)使用dev_alloc_skb()来构造一个新的sk_buff。</span></p><p><span>　　6)使用skb_reserve(rx_skb, 2);将sk_buff缓冲区里的数据包先后位移2字节,来腾出sk_buff缓冲区里的头部空间。</span></p><p><span>　　7)使用memcpy()将之前修改好的sk_buff-&gt;data复制到新的sk_buff里的data成员指向的地址处。</span></p><pre spellcheck="false" class="md-fences md-end-block ty-contain-cm modeLoaded" lang="c"><div class="CodeMirror cm-s-inner CodeMirror-wrap" lang="c"><div style="overflow: hidden; position: relative; width: 3px; height: 0px; top: 0px; left: 8px;"><textarea autocorrect="off" autocapitalize="off" spellcheck="false" tabindex="0" style="position: absolute; bottom: -1em; padding: 0px; width: 1000px; height: 1em; outline: none;"></textarea></div><div class="CodeMirror-scrollbar-filler" cm-not-content="true"></div><div class="CodeMirror-gutter-filler" cm-not-content="true"></div><div class="CodeMirror-scroll" tabindex="-1"><div class="CodeMirror-sizer" style="margin-left: 0px; margin-bottom: 0px; border-right-width: 0px; padding-right: 0px; padding-bottom: 0px;"><div style="position: relative; top: 0px;"><div class="CodeMirror-lines" role="presentation"><div role="presentation" style="position: relative; outline: none;"><div class="CodeMirror-measure"><pre><span>xxxxxxxxxx</span></pre></div><div class="CodeMirror-measure"></div><div style="position: relative; z-index: 1;"></div><div class="CodeMirror-code" role="presentation"><div class="CodeMirror-activeline" style="position: relative;"><div class="CodeMirror-activeline-background CodeMirror-linebackground"></div><div class="CodeMirror-gutter-background CodeMirror-activeline-gutter" style="left: 0px; width: 0px;"></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-variable">memcpy</span>(<span class="cm-variable">skb_put</span>(<span class="cm-variable">rx_skb</span>, <span class="cm-variable">skb</span><span class="cm-operator">-&gt;</span><span class="cm-variable">len</span>), <span class="cm-variable">skb</span><span class="cm-operator">-&gt;</span><span class="cm-variable">data</span>, <span class="cm-variable">skb</span><span class="cm-operator">-&gt;</span><span class="cm-variable">len</span>);</span></pre></div><pre class=" CodeMirror-line " role="presentation"><span role="presentation" style="padding-right: 0.1px;"><span class="cm-comment">// skb_put():来动态扩大sk_buff结构体里中的数据区，避免溢出</span></span></pre></div></div></div></div></div><div style="position: absolute; height: 0px; width: 1px; border-bottom: 0px solid transparent; top: 50px;"></div><div class="CodeMirror-gutters" style="display: none; height: 50px;"></div></div></div></pre><p><span>　　8)设置新的sk_buff 其它成员。</span></p><p><span>　　9)使用eth_type_trans()来获取上层协议,将返回值赋给sk_buff的protocol成员里。</span></p><p><span>　　10)然后更新接收统计信息,最后使用netif_rx( )来将sk_fuffer传递给上层协议中。</span></p></div>
+</body>
+</html>

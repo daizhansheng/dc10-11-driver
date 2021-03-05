@@ -1,0 +1,333 @@
+
+											Linux网卡设备驱动
+=======================================================================================================================
+0、linux网络子系统
+
+1、net_device
+	[1] 网卡设备作用：来完成高层网络协议的底层数据传输及设备控制等功能。
+		app[data]--tcp/udp/ip ....--->driver--->硬件
+		
+		网卡设备的使用:非设备文件，而是app的socket。
+		open: /dev/xxx
+		socket:
+	
+	[2]网络模型
+		app:   OSI模型				    	TCP/IP模型						app: data
+			====================		====================		====================
+					应用
+			--------------------
+					表示					应用层
+			--------------------
+					会话					tftp,nfs....              tftp协议头+data
+			--------------------		--------------------		--------------------
+					传输					传输:tcp udp			 tftp协议头+ tcp协议头+data
+			--------------------		--------------------		--------------------
+					网络					网络:ip					tftp协议头+ tcp协议头+ip头+data
+			--------------------		--------------------		--------------------
+				数据链路层
+			--------------------		 数据链路及物理层			tftp协议头+ tcp协议头+ip头+ ppp头+data
+				   物理层                  ppp,atm....
+			--------------------		--------------------		--------------------
+																	tftp协议头+ tcp协议头+ip头+ ppp头+data			
+			
+		各层只能与相邻层进行通信。
+		MAC地址:
+		打包过程： app->driver:在数据传输的过程中，根据每一层协议的规定，会在数据前添加对应的协议头
+		解包过程： driver->app:将封装好的数据，在向上层传输的过程中，会逐层删减对应的洗衣头，
+		
+		以网卡为例子，解析数据包格式：
+		/*
+		   |-------------------------------|-----------------------------------------------------------
+		   |目标地址MAC | 源地址MAC | 类型 | IP头部|TCP头部|   净荷 data   |       FCS帧校验序列(帧尾) |
+		   |-------------------------------|-------------------------------|---------------------------
+		   |          以太网头部           |     (1500-46)byte             |
+		   |-------------------------------|-------------------------------|
+		*/
+	[3]	linux网络结构
+	
+		-------------------
+			网络协议接口层：主要给上层的协议层提供发送接收函数
+		-------------------
+			网络设备接口层：给网络设备创建抽象的描述对象 struct  net_device
+		-------------------
+			设备驱动接口层:实现net_device的填充（ops） 注册
+		-------------------
+			网络设备层：网卡，路由器等
+		-------------------
+	  
+2、网络设备的分配、注册
+	分配：
+	[1]结构体剖析:struct net_device (struct net_device_ops )
+		struct net_device {
+			char	name[IFNAMSIZ];			/*网络设备的名称*/
+			const struct net_device_ops *netdev_ops;/*网络设备操作方法集合*/
+			unsigned char		*dev_addr;	/* 网络设备硬件地址指针------------》MAC*/
+			struct net_device_stats	stats;/*收发包数量以及数据长度*/
+			
+			
+			struct hlist_node	name_hlist;	/*网络设备的名称链表*/
+			struct list_head	dev_list;	/*将当前设备加入到所属命名空间的dev_base_head链表*/
+			struct hlist_node	index_hlist;/*网络设备接口索引散列表*/
+			struct list_head	napi_list;	/*用于支持NAPI特性的网络设备*/
+			const struct header_ops *header_ops;	/*针对网络访问层数据帧的一组操作集合eg:以太网eth_header_ops*/
+			int			ifindex;	/*当前网络设备所在命名空间的接口索引，唯一标识设备所提供的接口*/
+			unsigned int	mtu;	/* 网络访问层的最大传输单元，针对上一层净荷，对于以太网设备为1500byte*/
+			unsigned short		hard_header_len;	/* 当前网络设备所处理的网络访问层硬件协议头长度，以太网设备=14byte*/
+			unsigned char		addr_len;	/* 网络访问层硬件地址长度，以太网设备=6*/
+			struct netdev_hw_addr_list	uc;	/* 网络单播MAC地址 */
+			struct netdev_hw_addr_list	mc;	/* 网络多播MAC地址 */
+			struct netdev_hw_addr_list	dev_addrs; /*网络设备硬件地址链表*/
+			unsigned char		broadcast[MAX_ADDR_LEN];	/* 网络访问层硬件广播地址*/
+			struct netdev_queue __rcu *ingress_queue;		/*网络设备的接收队列*/
+			struct netdev_queue	*_tx ____cacheline_aligned_in_smp;/*网络设备的发送队列*/
+			unsigned int		num_tx_queues;	/*由alloc_netdev_mq函数分配的隶属于网络设备的发送队列的数量*/
+			unsigned int		real_num_tx_queues;/*网络设备中当前活动的发送队列的数量*/
+			enum reg_state；/*当前设备在系统中的注册状态*/
+			struct net		*nd_net;/*网络设备所在的命名空间*/
+			int			watchdog_timeo; /* 设定网络设备在传输数据包时传输超时的到期时间*/
+			struct timer_list	watchdog_timer;/*发送分组超时时间*/
+			struct device		dev;/*内嵌的设备对象*/
+		};
+		
+		struct net_device_ops {
+			int	(*ndo_open)(struct net_device *dev);//当ifconfig   eth0  up 
+			int	(*ndo_stop)(struct net_device *dev);//当ifconfig   eth0  down
+			netdev_tx_t	(*ndo_start_xmit) (struct sk_buff *skb, struct net_device *dev);//app发送数据时。会被调用
+		}；
+		
+		
+	[2]网络设备的分配/释放
+		[2.1]分配网络设备	
+		
+				(1)struct net_device*  alloc_netdev(int sizeof_priv, const char *name,void (*setup)(struct net_device *) ); 
+				功能：分配网络设备对象			
+				参数：sizeof_priv：该网络设备私有数据的大小			   
+					  name：网络设备的名称（ifconfig看到的设备名）				
+					  setup：完成网络设备自己独有的设置工作			
+				返回值：成功:struct net_device指针对象  失败：NULL 
+									
+				 struct net_device* alloc_etherdev(int sizeof_priv);//	:eth%d		
+				 功能：分配网卡设备对象			
+				 参数：sizeof_priv：该网络设备私有数据的大小			
+				 返回值：成功:struct net_device指针对象  失败：NULL 
+				
+				不同的网络设备其setup函数   以及   name是不一样的
+				
+				以太网设备：		      alloc_etherdev
+				name :"eth%d"
+				setup:ether_setup
+				alloc_netdev(sizeof_priv, "virt_netdev",ether_setup );
+				/*
+					#define alloc_etherdev(sizeof_priv) 
+						alloc_etherdev_mq(sizeof_priv, 1)
+							alloc_etherdev_mqs(sizeof_priv, count, count)
+								alloc_netdev_mqs(sizeof_priv, "eth%d", ether_setup, txqs, rxqs);
+								                               name    setup
+				*/
+				光纤分布式数据接口FDDI：  alloc_fddidev	
+				name :"fddi%d"
+				setup:fddi_setup
+				/*
+					struct net_device *alloc_fddidev(int sizeof_priv)
+							return alloc_netdev(sizeof_priv, "fddi%d", fddi_setup);
+				*/
+				
+				高性能并行接口HIPPI:	  alloc_hippi_dev	
+				name :"hip%d"
+				setup:hippi_setup
+				/*
+					struct net_device *alloc_hippi_dev(int sizeof_priv)
+						return alloc_netdev(sizeof_priv, "hip%d", hippi_setup);
+				*/
+				令牌环网络设备TR:	      alloc_trdev	
+				APPLE LocalTalk设备：     alloc_italkdev	
+				
+				光纤通道设备FC：	      alloc_fcdev
+ 
+		[2.2]释放网络设备:
+				void free_netdev(struct net_device *dev)			
+				功能：释放网络设备			
+				参数：struct net_device网络设备对象			
+				返回值：无
+		
+		[2.3]注册：	
+			int register_netdev(struct net_device *dev)			
+			功能：注册网络设备			
+			参数：struct net_device网络设备对象			
+			返回值：成功：0 失败:errno
+				
+		[2.4]注销：
+			void unregister_netdev(struct net_device *dev)			
+			功能：网络设备注销			
+			参数：struct net_device网络设备对象			
+			返回值：无
+			
+	程序：编写虚拟网卡设备实现ping;
+		步骤：
+			1.模块三要素
+			2.申请网络设备
+			3.填充网络设备
+			4.注册注销
+				
+3、设备方法
+		设备的核心功能是收发网络数据包，以及配置统计功能。
+	[3.1]设备接口的打开关闭
+	[3.2]数据包发送	[图]
+	/*
+	丢包：软件层面的高速性与实际硬件的发送速度几乎总是存在矛盾，故丢包。
+	传输超时：网络子系统高层传下来的数据包，如果网络设备在指定的时间内因某种原因而没有发送出去，则会产生传输超时。
+	*/			  
+	[3.3]数据包接收：分配 + 接收
+		
+		/*数据包的到达是随机的，类似于异步的过程，当网络设备成功接收到一个数据包时，需要通过中断的方
+		式引起驱动程序的干预。
+		该部分主要实现：【1】分配skb缓冲区，利用netif_rx传输skb到网络高层，高层接收后释放skb
+						【2】DMA操作：网络设备设备内存接收到的外部数据包--------DMA----->系统内存			
+			netif_rx函数调用在中断处理例程中发生，其是将接收到的数据包放到一个接收队列中，
+        利用软中断NET_RX_SOFTIRQ(napi_schedule触发该软中断)进行传输。
+		(netif_rx:return NET_RX_SUCCESS ,NET_RX_DROP)
+		*/			
+		
+4、套接字缓冲区
+	[1]skb结构体
+		struct sk_buff {
+			struct net_device	*dev;/*用于发送和接收该套接字缓冲区的网络设备对象*/
+			sk_buff_data_t		transport_header;/*网络传输层协议头*/
+			sk_buff_data_t		network_header;/*网络层协议头*/
+			sk_buff_data_t		mac_header;/*网络mac层协议头*/
+			sk_buff_data_t		tail;/*套接字缓冲区数据指针*/
+			sk_buff_data_t		end;
+			unsigned char		*head,*data;
+			|-----------|------------------------------------------------|------------|
+			|H          |D<---------------数据有效区------------------>T |      E	  |
+			|-----------|------------------------------------------------|------------|
+			head       data                                             tail          end
+			/*
+			head：已经分配的空间的头部；
+			end:  已经分配的空间尾部；head与end的位置不变
+			data: 数据有效区的起始
+			tail: 数据有效区的结尾
+			*/
+			unsigned int		len,data_len;/*len套接字缓冲区全部数据的长度 ，data_len分片数据段的商都*/
+			unsigned int		truesize;/*skb所在空间+数据区的大小 = sizeof(skb) + len;*/
+			atomic_t		users;/*缓冲区引用计数*/
+		}；
+		
+	[2]分配释放相关函数API
+		[2]分配释放相关函数API
+		
+		static inline struct sk_buff *alloc_skb(unsigned int size,gfp_t priority)//GFP_KERNEL GFP_ATOMIC..
+		功能：分配套接字缓冲区及其数据区
+		参数：size:套接字缓冲区所对应的数据区的大小（kmalloc）
+		      priority：分配区域标识
+		返回值：成功：struct sk_buff指针对象   失败：NULL
+		
+		void kfree_skb(struct sk_buff *skb)	
+		功能：释放一个套接字缓冲区及其对应数据的空间
+		参数：skb：struct sk_buff 指针对象
+		返回值：无
+	
+	
+	[3]数据空间移动API
+		unsigned char *skb_put(struct sk_buff *skb, unsigned int len)【图】
+		功能:向后移动skb->tail  len字节长度
+		参数：skb:struct sk_buff指针对象
+		       len：增加的长度
+		返回值：skb->tail移动前的位置
+		
+		前		
+		|-----------|---------------------------------------|----------------------|
+		|H          |D<---------------数据有效区100+--->T   |               E	   |
+		|-----------|---------------------------------------|----------------------|
+		head       data                                    tail1                 end
+		
+
+		后：
+		|-----------|---------------------------------------|---------|------------|
+		|H          |D<---------------数据有效区100+--->T   |   len   |      E	   |
+		|-----------|---------------------------------------|---------|------------|
+		head       data                                   tail1    tail2（100+len）     end
+
+		
+		unsigned char *skb_push(struct sk_buff *skb, unsigned int len)
+		功能：将skb->data向前移动len字节长
+		参数：skb:struct sk_buff指针对象
+		       len：增加的长度
+		返回值：移动后的skb->data指针
+		
+		前		
+		|-----------|---------------------------------------|----------------------|
+		|H          |D<---------------数据有效区100+--->T   |               E	   |
+		|-----------|---------------------------------------|----------------------|
+		head       data1                                    tail                 end
+		
+
+		后：
+		|-----|------|---------------------------------------|----------------------|
+		|H    |  len |D<---------------数据有效区100+--->T   |               E	    |
+		|-----|------|---------------------------------------|----------------------|
+		head data2   data1                                tail                 end
+		
+		
+/*上层发送数据包：
+（1）上层      数据包
+		---------|----
+	             |
+				\ /
+				skb<------建立DMA通道-------->网络设备内存		
+	（2）启动DMA,将skb-----DMA通道传输------->网络设备内存	
+	（3）网络设备内存----网络接口 + 线路----->外部	
+	（4）网络设备------------硬件中断-------->处理器	
+	（5）中断处理函数：数据发送善后工作
+	
+	数据包传输过程：
+			-----------------------------------------------------------------------------------------------
+			网络		dev_queue_xmit             实现一个传输队列，系统中每个cpu都拥有自己的传输队列
+			子系			dev_hard_start_xmit    每个要发送的数据包都会先放到传输队列中
+			统					ndo_start_xmit
+			-----------------------------------------------------------------------------------------------
+			设备					rc = ops->ndo_start_xmit(skb, dev);   真正的发送过程：其实现依赖于具体
+			驱动                                                          硬件设备，硬件在当前帧传输结束时会			
+			部分	                                                      以中断的方式通知驱动程序。
+			-----------------------------------------------------------------------------------------------
+
+
+
+		
+上层接收数据包：		
+该部分主要实现：【1】分配skb缓冲区，利用netif_rx传输skb到网络高层，高层接收后释放skb
+				【2】DMA操作：网络设备设备内存接收到的外部数据包--------DMA----->系统内存
+
+					
+    netif_rx函数调用在中断处理例程中发生，其是将接收到的数据包放到一个接收队列中，
+利用软中断NET_RX_SOFTIRQ(napi_schedule触发该软中断)进行传输。
+发送过程：
+	dm9000_start_xmit(struct sk_buff *skb, struct net_device *dev)函数。
+发送函数流程：
+		netif_stop_queue(dev); 暂停接口，使上层暂时不能发送数据。
+	正在发送中的数据计数加1。
+	如果只有当前包发送，写指令，写数据帧，发送包。
+	如果多于一包数据正在发送，当前帧不发送。
+	释放skb。
+	重新使能接口：netif_wake_queue(dev);
+	发送结束，DM9000产生中断，在中断函数中读取芯片相关寄存器判断中断原因，
+	如果是发送结束，则递减正发送包计数。并netif_wake_queue(dev);
+
+接收过程：
+	网络数据包到达，DM9000自动接收并存放在DM内部RAM中，产生中断。在中断处理中识别中断原因并调用接收处理函数dm9000_rx(struct net_device *dev)。
+	dm9000_rx：
+	读取芯片相关寄存器确认DM9000正确的收到一帧数据。
+	申请skb_buffer，将数据从DM9000中拷贝到skb_buffer中。设置skb->dev=nev,skb->protocol=eth_type_trans(skb, dev)。
+
+	然后把skb_buffer交给上层协议：netif_rx(skb);
+
+	最后更新接口统计信息：db->stats.rx_packets++; 收到包总数+1。
+*/
+
+
+
+
+
+
+
+
